@@ -431,7 +431,10 @@ class DuckService : Service() {
             .inflate(R.layout.bubble_alert, null).also { v ->
                 v.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
                 v.background = SpeechBubbleDrawable(
-                    ContextCompat.getColor(this, R.color.card), dp(26).toFloat(), dp(14).toFloat(), dp(6).toFloat()
+                    fill = ContextCompat.getColor(this, R.color.card),
+                    outline = ContextCompat.getColor(this, R.color.bubble_outline),
+                    radius = dp(40).toFloat(), tail = dp(BUBBLE_TAIL).toFloat(),
+                    shadow = dp(5).toFloat(), strokeWidth = dp(2.5f),
                 )
                 val p = overlayParams(dp(320), WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
                 wm.addView(v, p)
@@ -462,8 +465,8 @@ class DuckService : Service() {
         val besideRoom = screen.x - duckParams.width
         val below = besideRoom < dp(220)
         val bubble = v.background as? SpeechBubbleDrawable
-        val tail = dp(14)
-        val shadow = dp(6)
+        val tail = dp(BUBBLE_TAIL)
+        val shadow = dp(8)
         if (below) {
             p.width = min(screen.x - dp(16), dp(340))
             p.x = (duckParams.x + duckParams.width / 2 - p.width / 2).coerceIn(0, screen.x - p.width)
@@ -471,7 +474,7 @@ class DuckService : Service() {
             bubble?.tailOnTop = true
             bubble?.tailX = (duckParams.x + duckParams.width / 2 - p.x).toFloat()
             v.findViewById<View>(R.id.bubbleContent)
-                .setPadding(dp(14) + shadow, dp(12) + shadow + tail, dp(10) + shadow, dp(4) + dp(9))
+                .setPadding(dp(20) + shadow, dp(14) + shadow + tail, dp(16) + shadow, dp(6) + shadow)
         } else {
             p.width = min(besideRoom, dp(320))
             p.x = if (duckOnLeft) duckParams.x + duckParams.width else duckParams.x - p.width
@@ -483,8 +486,8 @@ class DuckService : Service() {
             bubble?.tailY = duckParams.y + duckParams.height * 0.4f - p.y
             val edge = shadow + tail
             v.findViewById<View>(R.id.bubbleContent).setPadding(
-                dp(14) + if (duckOnLeft) edge else shadow, dp(12) + shadow,
-                dp(10) + if (duckOnLeft) shadow else edge, dp(4) + dp(9)
+                dp(20) + if (duckOnLeft) edge else shadow, dp(14) + shadow,
+                dp(16) + if (duckOnLeft) shadow else edge, dp(6) + shadow
             )
         }
         runCatching { wm.updateViewLayout(v, p) }
@@ -510,11 +513,13 @@ class DuckService : Service() {
     }
 
     private fun dp(v: Int) = (v * resources.displayMetrics.density).roundToInt()
+    private fun dp(v: Float) = v * resources.displayMetrics.density
 
     companion object {
         const val ACTION_ALERT = "app.reminderducky.ALERT"
         private const val FG_ID = 1
         private const val WOBBLE_MILLIS = 20_000L
+        private const val BUBBLE_TAIL = 22
 
         @Volatile var instance: DuckService? = null
             private set

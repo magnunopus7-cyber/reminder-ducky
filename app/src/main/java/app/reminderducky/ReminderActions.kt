@@ -1,6 +1,7 @@
 package app.reminderducky
 
 import android.Manifest
+import android.app.Notification
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -14,6 +15,7 @@ import androidx.core.content.ContextCompat
 /** What happens when a reminder goes off, is done, or is snoozed. */
 object ReminderActions {
     const val SNOOZE_MINUTES = 10
+    private const val INSISTENT_MILLIS = 10 * 60_000L
 
     fun fire(context: Context, id: Long) {
         val store = ReminderStore(context)
@@ -80,9 +82,13 @@ object ReminderActions {
             .setCategory(NotificationCompat.CATEGORY_REMINDER)
             .setContentIntent(open)
             .setAutoCancel(true)
+            // Give up quacking after a while if nobody answers; Ducky's bubble stays.
+            .setTimeoutAfter(INSISTENT_MILLIS)
             .addAction(0, context.getString(R.string.notif_snooze, SNOOZE_MINUTES), actionIntent(context, NotificationActionReceiver.ACTION_SNOOZE, r.id))
             .addAction(0, context.getString(R.string.notif_done), actionIntent(context, NotificationActionReceiver.ACTION_DONE, r.id))
             .build()
+        // Keep quacking (the sound ends in a short pause) until Done, Snooze or a swipe.
+        n.flags = n.flags or Notification.FLAG_INSISTENT
         NotificationManagerCompat.from(context).notify(r.notificationId, n)
     }
 
