@@ -28,6 +28,7 @@ class DuckApp : Application() {
         nm.deleteNotificationChannel("reminders")
         nm.deleteNotificationChannel("reminders_quack")
         nm.deleteNotificationChannel("reminders_duck_sound")
+        nm.deleteNotificationChannel("reminders_short_quacks")
         nm.createNotificationChannel(
             NotificationChannel(CHANNEL_DUCK, getString(R.string.channel_duck), NotificationManager.IMPORTANCE_MIN).apply {
                 description = getString(R.string.channel_duck_desc)
@@ -40,7 +41,7 @@ class DuckApp : Application() {
         fun quackUri(context: android.content.Context): Uri =
             Uri.parse("android.resource://${context.packageName}/${R.raw.alarm_quack}")
 
-        const val CHANNEL_REMINDERS = "reminders_short_quacks"
+        const val CHANNEL_REMINDERS = "reminders_four_quacks"
         const val CHANNEL_DUCK = "duck"
     }
 }
