@@ -428,6 +428,10 @@ class DuckService : Service() {
         val r = store.get(id) ?: return
         val view = bubbleView ?: LayoutInflater.from(ContextThemeWrapper(this, R.style.Theme_ReminderDucky))
             .inflate(R.layout.bubble_alert, null).also { v ->
+                v.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+                v.background = SpeechBubbleDrawable(
+                    ContextCompat.getColor(this, R.color.card), dp(26).toFloat(), dp(14).toFloat(), dp(6).toFloat()
+                )
                 val p = overlayParams(bubbleWidth(), WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
                 wm.addView(v, p)
                 bubbleView = v
@@ -460,6 +464,16 @@ class DuckService : Service() {
         p.x = if (duckOnLeft) duckParams.x + duckParams.width else duckParams.x - p.width
         p.x = p.x.coerceIn(0, screen.x - p.width)
         p.y = duckParams.y.coerceIn(0, maxOf(0, screen.y - dp(160)))
+        (v.background as? SpeechBubbleDrawable)?.let { bubble ->
+            bubble.tailOnLeft = duckOnLeft
+            // Point at Ducky's head, a little above the middle of the duck window.
+            bubble.tailY = (duckParams.y + duckParams.height * 0.4f - p.y)
+            val edge = dp(6) + dp(14)
+            v.findViewById<View>(R.id.bubbleContent).setPadding(
+                dp(14) + if (duckOnLeft) edge else dp(6), dp(12) + dp(6),
+                dp(10) + if (duckOnLeft) dp(6) else edge, dp(4) + dp(9)
+            )
+        }
         runCatching { wm.updateViewLayout(v, p) }
     }
 
