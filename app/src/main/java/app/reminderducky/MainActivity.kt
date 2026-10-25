@@ -68,6 +68,7 @@ class MainActivity : AppCompatActivity() {
             .addView(preview, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
         preview.setOnClickListener {
             preview.renderer.squash()
+            if (prefs.tapQuack) Quack.play(this, 0.6f)
             preview.renderer.react(listOf(Mood.HAPPY, Mood.EXCITED, Mood.SURPRISED, Mood.SLEEPY).random(), 2f)
         }
 
@@ -84,6 +85,13 @@ class MainActivity : AppCompatActivity() {
         }
         findViewById<View>(R.id.btnBattery).setOnClickListener { askIgnoreBatteryOptimizations() }
 
+        findViewById<MaterialSwitch>(R.id.switchQuack).apply {
+            isChecked = prefs.tapQuack
+            setOnCheckedChangeListener { _, checked ->
+                prefs.tapQuack = checked
+                if (checked) Quack.play(this@MainActivity, 0.6f)
+            }
+        }
         findViewById<MaterialSwitch>(R.id.switchDuck).setOnCheckedChangeListener { v, checked ->
             if (!v.isPressed) return@setOnCheckedChangeListener
             prefs.showDuck = checked

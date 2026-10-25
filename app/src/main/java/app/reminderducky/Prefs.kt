@@ -10,6 +10,11 @@ class Prefs(context: Context) {
         get() = sp.getBoolean("show_duck", true)
         set(v) = sp.edit().putBoolean("show_duck", v).apply()
 
+    /** Quack when Ducky is tapped. */
+    var tapQuack: Boolean
+        get() = sp.getBoolean("tap_quack", true)
+        set(v) = sp.edit().putBoolean("tap_quack", v).apply()
+
     var look: DuckLook
         get() = DuckLook(
             enumOr(sp.getString("material", null), DuckMaterial.GLOSSY),

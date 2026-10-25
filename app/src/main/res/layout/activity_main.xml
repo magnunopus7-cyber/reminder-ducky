@@ -296,6 +296,13 @@
                         android:layout_marginTop="8dp"
                         android:text="Show Ducky over other apps"
                         android:textColor="@color/ink" />
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switchQuack"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Quack when I tap Ducky"
+                        android:textColor="@color/ink" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>

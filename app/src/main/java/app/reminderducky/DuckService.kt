@@ -237,6 +237,7 @@ class DuckService : Service() {
     private fun onDuckTapped() {
         duckView?.renderer?.squash()
         if (alertQueue.isEmpty()) duckView?.renderer?.react(Mood.HAPPY, 1.6f)
+        if (prefs.tapQuack) Quack.play(this, 0.6f)
         showMenu()
     }
 
@@ -395,6 +396,8 @@ class DuckService : Service() {
         if (duckRoot == null) return
         if (!alertQueue.contains(id)) alertQueue.addLast(id)
         duckView?.renderer?.react(Mood.SURPRISED, 1.2f)
+        // The notification quacks; if notifications are off, Ducky quacks itself.
+        if (!androidx.core.app.NotificationManagerCompat.from(this).areNotificationsEnabled()) Quack.play(this, 1f)
         setWobbling(true)
         handler.removeCallbacks(calmDown)
         handler.postDelayed(calmDown, WOBBLE_MILLIS)
