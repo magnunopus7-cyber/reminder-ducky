@@ -35,7 +35,8 @@ enum class DuckAccessory(@StringRes val label: Int, val code: Float, val a: Int,
 }
 
 enum class DuckSize(@StringRes val label: Int, val dp: Int) {
-    SMALL(R.string.size_small, 80), MEDIUM(R.string.size_medium, 104), LARGE(R.string.size_large, 136), HUGE(R.string.size_huge, 208)
+    SMALL(R.string.size_small, 80), MEDIUM(R.string.size_medium, 104), LARGE(R.string.size_large, 136), HUGE(R.string.size_huge, 208),
+    GIGANTIC(R.string.size_gigantic, 288)
 }
 
 data class DuckLook(

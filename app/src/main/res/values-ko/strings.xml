@@ -83,6 +83,7 @@
     <string name="size_medium">보통</string>
     <string name="size_large">크게</string>
     <string name="size_huge">아주 크게</string>
+    <string name="size_gigantic">아주 아주 크게</string>
     <string name="menu_settings">설정</string>
     <string name="skin_classic">클래식</string>
     <string name="skin_classic_m">기본</string>

@@ -374,9 +374,15 @@ class DuckService : Service() {
         val p = v.layoutParams as WindowManager.LayoutParams
         val screen = screenSize()
         val duckOnLeft = duckParams.x + duckParams.width / 2 < screen.x / 2
-        p.x = if (duckOnLeft) duckParams.x + duckParams.width else duckParams.x - p.width
-        p.x = p.x.coerceIn(0, maxOf(0, screen.x - p.width))
-        p.y = (duckParams.y + (duckParams.height - dp(76)) / 2).coerceIn(0, maxOf(0, screen.y - dp(80)))
+        if (screen.x - duckParams.width < p.width) {
+            // No room beside a very big duck: sit just below it.
+            p.x = (duckParams.x + duckParams.width / 2 - p.width / 2).coerceIn(0, maxOf(0, screen.x - p.width))
+            p.y = (duckParams.y + duckParams.height - dp(8)).coerceIn(0, maxOf(0, screen.y - dp(80)))
+        } else {
+            p.x = if (duckOnLeft) duckParams.x + duckParams.width else duckParams.x - p.width
+            p.x = p.x.coerceIn(0, maxOf(0, screen.x - p.width))
+            p.y = (duckParams.y + (duckParams.height - dp(76)) / 2).coerceIn(0, maxOf(0, screen.y - dp(80)))
+        }
         runCatching { wm.updateViewLayout(v, p) }
     }
 
@@ -427,7 +433,7 @@ class DuckService : Service() {
                 v.background = SpeechBubbleDrawable(
                     ContextCompat.getColor(this, R.color.card), dp(26).toFloat(), dp(14).toFloat(), dp(6).toFloat()
                 )
-                val p = overlayParams(bubbleWidth(), WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
+                val p = overlayParams(dp(320), WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
                 wm.addView(v, p)
                 bubbleView = v
             }
@@ -444,29 +450,41 @@ class DuckService : Service() {
         positionBubble()
     }
 
-    private fun bubbleWidth(): Int {
-        val screen = screenSize()
-        return min(screen.x - duckSizePx(), dp(320))
-    }
-
-    /** Keeps the speech bubble beside the duck, on the side facing the screen. */
+    /**
+     * Keeps the speech bubble beside the duck, on the side facing the screen,
+     * or underneath it when a very big duck leaves no room at the side.
+     */
     private fun positionBubble() {
         val v = bubbleView ?: return
         val p = v.layoutParams as WindowManager.LayoutParams
         val screen = screenSize()
-        p.width = bubbleWidth()
         val duckOnLeft = duckParams.x + duckParams.width / 2 < screen.x / 2
-        p.x = if (duckOnLeft) duckParams.x + duckParams.width else duckParams.x - p.width
-        p.x = p.x.coerceIn(0, screen.x - p.width)
-        p.y = duckParams.y.coerceIn(0, maxOf(0, screen.y - dp(160)))
-        (v.background as? SpeechBubbleDrawable)?.let { bubble ->
-            bubble.tailOnLeft = duckOnLeft
+        val besideRoom = screen.x - duckParams.width
+        val below = besideRoom < dp(220)
+        val bubble = v.background as? SpeechBubbleDrawable
+        val tail = dp(14)
+        val shadow = dp(6)
+        if (below) {
+            p.width = min(screen.x - dp(16), dp(340))
+            p.x = (duckParams.x + duckParams.width / 2 - p.width / 2).coerceIn(0, screen.x - p.width)
+            p.y = (duckParams.y + duckParams.height - dp(12)).coerceIn(0, maxOf(0, screen.y - dp(170)))
+            bubble?.tailOnTop = true
+            bubble?.tailX = (duckParams.x + duckParams.width / 2 - p.x).toFloat()
+            v.findViewById<View>(R.id.bubbleContent)
+                .setPadding(dp(14) + shadow, dp(12) + shadow + tail, dp(10) + shadow, dp(4) + dp(9))
+        } else {
+            p.width = min(besideRoom, dp(320))
+            p.x = if (duckOnLeft) duckParams.x + duckParams.width else duckParams.x - p.width
+            p.x = p.x.coerceIn(0, screen.x - p.width)
+            p.y = duckParams.y.coerceIn(0, maxOf(0, screen.y - dp(160)))
+            bubble?.tailOnTop = false
+            bubble?.tailOnLeft = duckOnLeft
             // Point at Ducky's head, a little above the middle of the duck window.
-            bubble.tailY = (duckParams.y + duckParams.height * 0.4f - p.y)
-            val edge = dp(6) + dp(14)
+            bubble?.tailY = duckParams.y + duckParams.height * 0.4f - p.y
+            val edge = shadow + tail
             v.findViewById<View>(R.id.bubbleContent).setPadding(
-                dp(14) + if (duckOnLeft) edge else dp(6), dp(12) + dp(6),
-                dp(10) + if (duckOnLeft) dp(6) else edge, dp(4) + dp(9)
+                dp(14) + if (duckOnLeft) edge else shadow, dp(12) + shadow,
+                dp(10) + if (duckOnLeft) shadow else edge, dp(4) + dp(9)
             )
         }
         runCatching { wm.updateViewLayout(v, p) }

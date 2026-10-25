@@ -20,6 +20,12 @@ class SpeechBubbleDrawable(
 ) : Drawable() {
     var tailOnLeft = true
         set(v) { field = v; invalidateSelf() }
+    /** Tail on the top edge instead, used when the bubble sits below Ducky. */
+    var tailOnTop = false
+        set(v) { field = v; invalidateSelf() }
+    /** Where a top tail points, measured from the left of the bubble. */
+    var tailX = 0f
+        set(v) { field = v; invalidateSelf() }
     /** Where the tail points, measured from the top of the bubble. */
     var tailY = 0f
         set(v) { field = v; invalidateSelf() }
@@ -33,20 +39,29 @@ class SpeechBubbleDrawable(
 
     override fun draw(canvas: Canvas) {
         val b = bounds
+        val side = !tailOnTop
         rect.set(
-            b.left + shadow + if (tailOnLeft) tail else 0f,
-            b.top + shadow,
-            b.right - shadow - if (tailOnLeft) 0f else tail,
+            b.left + shadow + if (side && tailOnLeft) tail else 0f,
+            b.top + shadow + if (tailOnTop) tail else 0f,
+            b.right - shadow - if (side && !tailOnLeft) tail else 0f,
             b.bottom - shadow * 1.5f,
         )
         path.reset()
         path.addRoundRect(rect, radius, radius, Path.Direction.CW)
-        val y = tailY.coerceIn(rect.top + radius, rect.bottom - radius)
-        val tip = if (tailOnLeft) rect.left - tail else rect.right + tail
-        val base = if (tailOnLeft) rect.left + 2f else rect.right - 2f
-        path.moveTo(base, y - tail * 0.9f)
-        path.quadTo(base, y + tail * 0.1f, tip, y + tail * 0.3f)
-        path.quadTo(base, y + tail * 0.6f, base, y + tail * 0.9f)
+        if (tailOnTop) {
+            val x = tailX.coerceIn(rect.left + radius, rect.right - radius)
+            val base = rect.top + 2f
+            path.moveTo(x - tail * 0.9f, base)
+            path.quadTo(x - tail * 0.1f, base, x - tail * 0.3f, rect.top - tail)
+            path.quadTo(x + tail * 0.6f, base, x + tail * 0.9f, base)
+        } else {
+            val y = tailY.coerceIn(rect.top + radius, rect.bottom - radius)
+            val tip = if (tailOnLeft) rect.left - tail else rect.right + tail
+            val base = if (tailOnLeft) rect.left + 2f else rect.right - 2f
+            path.moveTo(base, y - tail * 0.9f)
+            path.quadTo(base, y + tail * 0.1f, tip, y + tail * 0.3f)
+            path.quadTo(base, y + tail * 0.6f, base, y + tail * 0.9f)
+        }
         path.close()
         path.fillType = Path.FillType.WINDING
         canvas.drawPath(path, paint)
