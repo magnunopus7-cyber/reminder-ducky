@@ -387,7 +387,7 @@ class DuckService : Service() {
         if (!alertQueue.contains(id)) alertQueue.addLast(id)
         duckView?.renderer?.react(Mood.SURPRISED, 1.2f)
         // The notification quacks; if notifications are off, Ducky quacks itself.
-        if (!androidx.core.app.NotificationManagerCompat.from(this).areNotificationsEnabled()) Quack.play(this, 1f)
+        if (!androidx.core.app.NotificationManagerCompat.from(this).areNotificationsEnabled()) Quack.playAlarm(this)
         setWobbling(true)
         handler.removeCallbacks(calmDown)
         handler.postDelayed(calmDown, WOBBLE_MILLIS)

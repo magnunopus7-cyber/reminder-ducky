@@ -24,8 +24,9 @@ class DuckApp : Application() {
             }
         )
         // Android never changes a channel's sound after creation, so the
-        // first version's channel (default sound) is replaced.
+        // earlier channels (default sound, then the first quack) are replaced.
         nm.deleteNotificationChannel("reminders")
+        nm.deleteNotificationChannel("reminders_quack")
         nm.createNotificationChannel(
             NotificationChannel(CHANNEL_DUCK, getString(R.string.channel_duck), NotificationManager.IMPORTANCE_MIN).apply {
                 description = getString(R.string.channel_duck_desc)
@@ -36,9 +37,9 @@ class DuckApp : Application() {
 
     companion object {
         fun quackUri(context: android.content.Context): Uri =
-            Uri.parse("android.resource://${context.packageName}/${R.raw.quack}")
+            Uri.parse("android.resource://${context.packageName}/${R.raw.alarm_quack}")
 
-        const val CHANNEL_REMINDERS = "reminders_quack"
+        const val CHANNEL_REMINDERS = "reminders_duck_sound"
         const val CHANNEL_DUCK = "duck"
     }
 }
