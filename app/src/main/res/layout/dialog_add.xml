@@ -39,11 +39,17 @@
     </LinearLayout>
 
     <!-- Scroll the wheels to set the time. -->
+    <!-- Shrunk to 70% (scaling doesn't shrink the layout, so the negative
+         margins take back the space) to leave room for scrolling the page. -->
     <TimePicker
         android:id="@+id/timeWheel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="-32dp"
+        android:layout_marginBottom="-32dp"
+        android:scaleX="0.7"
+        android:scaleY="0.7"
         android:timePickerMode="spinner" />
 
     <com.google.android.material.chip.ChipGroup
