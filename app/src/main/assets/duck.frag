@@ -225,7 +225,7 @@ vec4 shade(vec3 pos, vec3 n, vec3 rd, float id) {
         // Glossy vinyl, like a real bath duck.
         float diff = clamp(ndl * 0.6 + 0.4, 0.0, 1.0);
         float sky = 0.5 + 0.5 * n.y;
-        vec3 dif = base * (0.35 * sky * vec3(0.85, 0.92, 1.05) + 0.85 * diff);
+        vec3 dif = base * (0.40 * sky * vec3(0.85, 0.92, 1.05) + 1.0 * diff);
         float fre = 0.04 + 0.96 * pow(1.0 - ndv, 5.0);
         col = mix(dif, env(r), fre * 0.55) + spec * 0.9;
         if (id > 1.5 && id < 2.5) {

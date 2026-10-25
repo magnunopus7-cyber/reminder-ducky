@@ -239,8 +239,8 @@ class DuckRenderer(context: Context) : GLSurfaceView.Renderer {
         private const val TAG = "DuckRenderer"
         private const val SQUASH_SECONDS = 0.45f
         // Three-quarter views: beak to the right or left, turned towards the viewer.
-        private const val YAW_RIGHT = -1.15f
-        private const val YAW_LEFT = -(PI.toFloat()) + 1.15f
+        private const val YAW_RIGHT = -1.3f
+        private const val YAW_LEFT = -(PI.toFloat()) + 1.3f
         private val UNIFORMS = listOf(
             "uRes", "uRot", "uBob", "uScale", "uMat", "uBody", "uHead", "uBeak", "uAcc",
             "uAccA", "uAccB", "uEyeMode", "uEyeR", "uDeco", "uDecoAmt", "uDecoSide",

@@ -8,7 +8,7 @@ enum class DuckMaterial(val label: String, val code: Float) {
 }
 
 enum class DuckColor(val label: String, val body: Int, val head: Int = body) {
-    SUNNY("Sunny", 0xFFB80D),
+    SUNNY("Sunny", 0xFFD01A),
     BLOSSOM("Blossom", 0xFFA6BA),
     SKY("Sky", 0x6B9EF2),
     MINT("Mint", 0x8FE0BE),
