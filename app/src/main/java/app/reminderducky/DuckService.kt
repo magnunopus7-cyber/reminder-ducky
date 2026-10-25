@@ -345,13 +345,52 @@ class DuckService : Service() {
         listOf(R.id.menuDone, R.id.menuSnooze, R.id.menuAdd, R.id.menuTodo, R.id.menuSettings)
             .forEach { id -> v.findViewById<View>(id).let { it.tooltipText = it.contentDescription } }
         v.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+        var width = v.measuredWidth
+        if (fillTodos(v)) width = maxOf(width, min(dp(300), screenSize().x - dp(8)))
         val p = overlayParams(
-            v.measuredWidth, WindowManager.LayoutParams.WRAP_CONTENT,
+            width, WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
         )
         wm.addView(v, p)
         menuView = v
         positionMenu()
+        // Re-centre once the real height is known.
+        v.post { positionMenu() }
+    }
+
+    /** Lists open to-dos at the top of the menu. Returns whether there were any. */
+    private fun fillTodos(menu: View): Boolean {
+        val box = menu.findViewById<android.widget.LinearLayout>(R.id.menuTodos)
+        box.removeAllViews()
+        val store = TodoStore(this)
+        val open = store.all().filter { !it.done }
+        box.visibility = if (open.isEmpty()) View.GONE else View.VISIBLE
+        val themed = ContextThemeWrapper(this, R.style.Theme_ReminderDucky)
+        for (t in open.take(MENU_TODOS)) {
+            box.addView(com.google.android.material.checkbox.MaterialCheckBox(themed).apply {
+                text = t.text
+                textSize = 15f
+                maxLines = 2
+                setTextColor(ContextCompat.getColor(this@DuckService, R.color.ink))
+                setOnCheckedChangeListener { _, checked ->
+                    if (!checked) return@setOnCheckedChangeListener
+                    store.save(t.copy(done = true))
+                    duckView?.renderer?.react(Mood.HAPPY, 1.8f)
+                    if (prefs.tapQuack) Quack.play(this@DuckService, 0.5f)
+                    paintFlags = paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
+                    isEnabled = false
+                }
+            })
+        }
+        if (open.size > MENU_TODOS) {
+            box.addView(TextView(themed).apply {
+                text = "+${open.size - MENU_TODOS}"
+                setTextColor(ContextCompat.getColor(this@DuckService, R.color.ink_soft))
+                setPadding(dp(8), 0, 0, dp(4))
+                setOnClickListener { openApp(MainActivity.ACTION_TODO) }
+            })
+        }
+        return open.isNotEmpty()
     }
 
     private fun hideMenu() {
@@ -382,7 +421,8 @@ class DuckService : Service() {
         } else {
             p.x = if (duckOnLeft) duckParams.x + duckParams.width else duckParams.x - p.width
             p.x = p.x.coerceIn(0, maxOf(0, screen.x - p.width))
-            p.y = (duckParams.y + (duckParams.height - dp(76)) / 2).coerceIn(0, maxOf(0, screen.y - dp(80)))
+            val h = v.height.takeIf { it > 0 } ?: dp(76)
+            p.y = (duckParams.y + (duckParams.height - h) / 2).coerceIn(0, maxOf(0, screen.y - h))
         }
         runCatching { wm.updateViewLayout(v, p) }
     }
@@ -521,6 +561,7 @@ class DuckService : Service() {
         private const val FG_ID = 1
         private const val WOBBLE_MILLIS = 20_000L
         private const val BUBBLE_TAIL = 22
+        private const val MENU_TODOS = 6
 
         @Volatile var instance: DuckService? = null
             private set
