@@ -335,18 +335,13 @@ class DuckService : Service() {
             setOnClickListener { alert?.let { ReminderActions.snooze(this@DuckService, it.id) } }
         }
         v.findViewById<View>(R.id.menuAdd).setOnClickListener { openApp(MainActivity.ACTION_ADD) }
-        v.findViewById<View>(R.id.menuList).setOnClickListener { openApp(null) }
-        v.findViewById<View>(R.id.menuCustomize).setOnClickListener { openApp(MainActivity.ACTION_CUSTOMIZE) }
-        v.findViewById<View>(R.id.menuHide).setOnClickListener {
-            hideMenu()
-            hideDuckByUser()
-        }
+        v.findViewById<View>(R.id.menuSettings).setOnClickListener { openApp(MainActivity.ACTION_CUSTOMIZE) }
         v.setOnTouchListener { _, e ->
             if (e.actionMasked == MotionEvent.ACTION_OUTSIDE) hideMenu()
             false
         }
         // Long-press any icon to see what it does.
-        listOf(R.id.menuDone, R.id.menuSnooze, R.id.menuAdd, R.id.menuList, R.id.menuCustomize, R.id.menuHide)
+        listOf(R.id.menuDone, R.id.menuSnooze, R.id.menuAdd, R.id.menuSettings)
             .forEach { id -> v.findViewById<View>(id).let { it.tooltipText = it.contentDescription } }
         v.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
         val p = overlayParams(

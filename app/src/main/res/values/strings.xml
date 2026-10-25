@@ -82,6 +82,8 @@
     <string name="size_small">Small</string>
     <string name="size_medium">Medium</string>
     <string name="size_large">Large</string>
+    <string name="size_huge">Extra large</string>
+    <string name="menu_settings">Settings</string>
     <string name="skin_classic">Classic</string>
     <string name="skin_classic_m">Default</string>
     <string name="skin_pastel">Pastel</string>

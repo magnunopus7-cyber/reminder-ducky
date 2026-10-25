@@ -22,9 +22,7 @@
             <TextView android:id="@+id/menuDone" style="@style/MenuIcon" android:contentDescription="@string/menu_done" android:text="✅" />
             <TextView android:id="@+id/menuSnooze" style="@style/MenuIcon" android:contentDescription="@string/menu_snooze" android:text="⏰" />
             <TextView android:id="@+id/menuAdd" style="@style/MenuIcon" android:contentDescription="@string/menu_add" android:text="➕" />
-            <TextView android:id="@+id/menuList" style="@style/MenuIcon" android:contentDescription="@string/menu_list" android:text="📋" />
-            <TextView android:id="@+id/menuCustomize" style="@style/MenuIcon" android:contentDescription="@string/menu_customize" android:text="🎨" />
-            <TextView android:id="@+id/menuHide" style="@style/MenuIcon" android:contentDescription="@string/menu_hide" android:text="🙈" />
+            <TextView android:id="@+id/menuSettings" style="@style/MenuIcon" android:contentDescription="@string/menu_settings" android:text="⚙️" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 </FrameLayout>
