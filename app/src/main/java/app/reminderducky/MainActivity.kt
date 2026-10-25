@@ -123,9 +123,12 @@ class MainActivity : AppCompatActivity() {
         preview.onResume()
         refresh()
         if (prefs.showDuck && DuckService.canShow(this) && DuckService.instance == null) DuckService.start(this)
+        // The floating duck would cover this screen's buttons; it comes back when you leave.
+        DuckService.setAppOpen(true)
     }
 
     override fun onPause() {
+        DuckService.setAppOpen(false)
         preview.onPause()
         super.onPause()
     }
@@ -377,32 +380,39 @@ class MainActivity : AppCompatActivity() {
         dialog.setOnShowListener {
             preview.visibility = View.INVISIBLE
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-                val text = input.text?.toString()?.trim().orEmpty()
-                if (text.isEmpty()) {
-                    input.error = "Type what to remind you about"
-                    return@setOnClickListener
+                val error = view.findViewById<TextView>(R.id.dialogError)
+                fun fail(msg: String) {
+                    error.text = msg
+                    error.visibility = View.VISIBLE
                 }
-                val repeat = repeatChips[repeatGroup.checkedChipId] ?: Repeat.NONE
-                val icon = iconChips.entries.firstOrNull { it.value.id == iconGroup.checkedChipId }?.key ?: Reminder.DEFAULT_ICON
-                val now = System.currentTimeMillis()
-                var time = cal.timeInMillis
-                if (time <= now) {
-                    if (repeat == Repeat.NONE) {
-                        Toast.makeText(this, "Pick a time in the future", Toast.LENGTH_SHORT).show()
+                try {
+                    val text = input.text?.toString()?.trim().orEmpty()
+                    if (text.isEmpty()) {
+                        fail("Please type what Ducky should remind you about.")
                         return@setOnClickListener
                     }
-                    time = repeat.nextAfter(time, now)
+                    val repeat = repeatChips[repeatGroup.checkedChipId] ?: Repeat.NONE
+                    val icon = iconChips.entries.firstOrNull { it.value.id == iconGroup.checkedChipId }?.key ?: Reminder.DEFAULT_ICON
+                    val now = System.currentTimeMillis()
+                    var time = cal.timeInMillis
+                    if (time <= now) {
+                        if (repeat == Repeat.NONE) {
+                            fail("That time has already passed. Please pick a later time.")
+                            return@setOnClickListener
+                        }
+                        time = repeat.nextAfter(time, now)
+                    }
+                    val r = Reminder(existing?.id ?: Reminder.newId(), text, time, repeat, icon = icon)
+                    store.save(r)
+                    existing?.let { Alarms.cancel(this, it.id) }
+                    Alarms.schedule(this, r)
+                    renderList()
+                    preview.renderer.react(Mood.HAPPY, 1.5f)
+                    Toast.makeText(this, "Saved! Ducky will remind you.", Toast.LENGTH_SHORT).show()
+                    dialog.dismiss()
+                } catch (e: Exception) {
+                    fail("Sorry, saving failed: ${e.javaClass.simpleName}: ${e.message}")
                 }
-                existing?.let {
-                    Alarms.cancel(this, it.id)
-                    ReminderActions.done(this, it.id)
-                }
-                val r = Reminder(existing?.id ?: Reminder.newId(), text, time, repeat, icon = icon)
-                store.save(r)
-                Alarms.schedule(this, r)
-                renderList()
-                preview.renderer.react(Mood.HAPPY, 1.5f)
-                dialog.dismiss()
             }
         }
         dialog.setOnDismissListener { preview.visibility = View.VISIBLE }

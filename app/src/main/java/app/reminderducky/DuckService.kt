@@ -148,6 +148,7 @@ class DuckService : Service() {
         duckView = view
         duckRoot = root
         placeFromPrefs(addTo = root)
+        if (appOpen) applyAppOpen(true)
     }
 
     /** Puts the duck on its remembered edge and height. */
@@ -162,6 +163,20 @@ class DuckService : Service() {
         if (addTo != null) wm.addView(addTo, duckParams) else duckRoot?.let { wm.updateViewLayout(it, duckParams) }
         positionBubble()
         positionMenu()
+    }
+
+    /** Steps aside (invisible and untouchable) while the Ducky app itself is open. */
+    private fun applyAppOpen(open: Boolean) {
+        val root = duckRoot ?: return
+        if (open) hideMenu()
+        root.visibility = if (open) View.INVISIBLE else View.VISIBLE
+        duckParams.flags = if (open) {
+            duckParams.flags or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+        } else {
+            duckParams.flags and WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE.inv()
+        }
+        wm.updateViewLayout(root, duckParams)
+        bubbleView?.visibility = if (open) View.GONE else View.VISIBLE
     }
 
     /** Called from the app when the finish or size changes. */
@@ -478,6 +493,15 @@ class DuckService : Service() {
 
         @Volatile var instance: DuckService? = null
             private set
+
+        /** True while the Ducky app is on screen. */
+        var appOpen = false
+            private set
+
+        fun setAppOpen(open: Boolean) {
+            appOpen = open
+            instance?.applyAppOpen(open)
+        }
 
         fun canShow(context: Context) = Settings.canDrawOverlays(context)
 
