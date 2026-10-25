@@ -212,6 +212,7 @@ class DuckService : Service() {
                         showTrash()
                     }
                     if (dragging) {
+                        duckView?.renderer?.poke()
                         duckParams.x = startX + dx.roundToInt()
                         duckParams.y = startY + dy.roundToInt()
                         wm.updateViewLayout(v, duckParams)

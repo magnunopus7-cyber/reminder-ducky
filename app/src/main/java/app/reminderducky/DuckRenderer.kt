@@ -34,8 +34,12 @@ class DuckRenderer(context: Context) : GLSurfaceView.Renderer {
     @Volatile var alerting = false
     /** False keeps the duck awake at night (used for the in-app preview). */
     @Volatile var sleepsAtNight = true
+    /** Doze off when nobody has tapped Ducky for a while (off for the in-app preview). */
+    @Volatile var sleepsWhenIdle = true
 
     @Volatile private var squashStartNanos = 0L
+    /** Last tap, drag or reminder; Ducky dozes off after a quiet while. */
+    @Volatile private var lastPokeNanos = System.nanoTime()
     @Volatile private var reaction = Mood.NORMAL
     @Volatile private var reactionStartNanos = 0L
     @Volatile private var reactionEndNanos = 0L
@@ -61,6 +65,12 @@ class DuckRenderer(context: Context) : GLSurfaceView.Renderer {
 
     fun squash() {
         squashStartNanos = System.nanoTime()
+        poke()
+    }
+
+    /** Wakes Ducky up and restarts the doze timer. */
+    fun poke() {
+        lastPokeNanos = System.nanoTime()
     }
 
     /** Shows a mood for a few seconds, then goes back to normal. */
@@ -69,6 +79,7 @@ class DuckRenderer(context: Context) : GLSurfaceView.Renderer {
         reactionStartNanos = now
         reactionEndNanos = now + (seconds * 1e9f).toLong()
         reaction = mood
+        poke()
     }
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
@@ -89,6 +100,7 @@ class DuckRenderer(context: Context) : GLSurfaceView.Renderer {
     private fun currentMood(now: Long, t: Float): Mood {
         if (now < reactionEndNanos) return reaction
         if (alerting) return Mood.EXCITED
+        if (sleepsWhenIdle && now - lastPokeNanos > IDLE_SLEEP_NANOS) return Mood.SLEEPY
         if (t - nightCheckedAt > 30f) {
             nightCheckedAt = t
             val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
@@ -238,6 +250,7 @@ class DuckRenderer(context: Context) : GLSurfaceView.Renderer {
     companion object {
         private const val TAG = "DuckRenderer"
         private const val SQUASH_SECONDS = 0.45f
+        private const val IDLE_SLEEP_NANOS = 2 * 60 * 1_000_000_000L
         // Three-quarter views: beak to the right or left, turned towards the viewer.
         private const val YAW_RIGHT = -1.3f
         private const val YAW_LEFT = -(PI.toFloat()) + 1.3f

@@ -63,6 +63,7 @@ class MainActivity : AppCompatActivity() {
             renderer.look = prefs.look
             renderer.facingRight = false
             renderer.sleepsAtNight = false
+            renderer.sleepsWhenIdle = false
             contentDescription = getString(R.string.preview_desc)
         }
         findViewById<FrameLayout>(R.id.previewHolder)
