@@ -325,16 +325,7 @@ class DuckService : Service() {
         bubbleView = null
         val v = LayoutInflater.from(ContextThemeWrapper(this, R.style.Theme_ReminderDucky))
             .inflate(R.layout.quick_menu, null)
-        val store = ReminderStore(this)
-        val alert = alertQueue.firstOrNull()?.let { store.get(it) }
-        val header = v.findViewById<TextView>(R.id.menuHeader)
-        if (alert != null) {
-            header.text = "${alert.icon}  ${alert.text}"
-        } else {
-            val next = store.all().filter { !it.fired }.minByOrNull { it.timeMillis }
-            header.text = if (next == null) "Nothing coming up. Quack!" else
-                "Next: ${next.icon} ${next.text} · ${DateFormat.getTimeFormat(this).format(next.timeMillis)}"
-        }
+        val alert = alertQueue.firstOrNull()?.let { ReminderStore(this).get(it) }
         v.findViewById<View>(R.id.menuDone).apply {
             visibility = if (alert != null) View.VISIBLE else View.GONE
             setOnClickListener { alert?.let { ReminderActions.done(this@DuckService, it.id) } }
@@ -354,8 +345,12 @@ class DuckService : Service() {
             if (e.actionMasked == MotionEvent.ACTION_OUTSIDE) hideMenu()
             false
         }
+        // Long-press any icon to see what it does.
+        listOf(R.id.menuDone, R.id.menuSnooze, R.id.menuAdd, R.id.menuList, R.id.menuCustomize, R.id.menuHide)
+            .forEach { id -> v.findViewById<View>(id).let { it.tooltipText = it.contentDescription } }
+        v.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
         val p = overlayParams(
-            dp(280), WindowManager.LayoutParams.WRAP_CONTENT,
+            v.measuredWidth, WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
         )
         wm.addView(v, p)
@@ -386,7 +381,7 @@ class DuckService : Service() {
         val duckOnLeft = duckParams.x + duckParams.width / 2 < screen.x / 2
         p.x = if (duckOnLeft) duckParams.x + duckParams.width else duckParams.x - p.width
         p.x = p.x.coerceIn(0, maxOf(0, screen.x - p.width))
-        p.y = duckParams.y.coerceIn(0, maxOf(0, screen.y - dp(380)))
+        p.y = (duckParams.y + (duckParams.height - dp(76)) / 2).coerceIn(0, maxOf(0, screen.y - dp(80)))
         runCatching { wm.updateViewLayout(v, p) }
     }
 
