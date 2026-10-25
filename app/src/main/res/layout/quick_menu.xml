@@ -19,12 +19,12 @@
             android:orientation="horizontal"
             android:padding="6dp">
 
-            <TextView android:id="@+id/menuDone" style="@style/MenuIcon" android:contentDescription="Mark as done" android:text="✅" />
-            <TextView android:id="@+id/menuSnooze" style="@style/MenuIcon" android:contentDescription="Snooze 10 minutes" android:text="⏰" />
-            <TextView android:id="@+id/menuAdd" style="@style/MenuIcon" android:contentDescription="Add a reminder" android:text="➕" />
-            <TextView android:id="@+id/menuList" style="@style/MenuIcon" android:contentDescription="View all reminders" android:text="📋" />
-            <TextView android:id="@+id/menuCustomize" style="@style/MenuIcon" android:contentDescription="Customize Ducky" android:text="🎨" />
-            <TextView android:id="@+id/menuHide" style="@style/MenuIcon" android:contentDescription="Hide Ducky for now" android:text="🙈" />
+            <TextView android:id="@+id/menuDone" style="@style/MenuIcon" android:contentDescription="@string/menu_done" android:text="✅" />
+            <TextView android:id="@+id/menuSnooze" style="@style/MenuIcon" android:contentDescription="@string/menu_snooze" android:text="⏰" />
+            <TextView android:id="@+id/menuAdd" style="@style/MenuIcon" android:contentDescription="@string/menu_add" android:text="➕" />
+            <TextView android:id="@+id/menuList" style="@style/MenuIcon" android:contentDescription="@string/menu_list" android:text="📋" />
+            <TextView android:id="@+id/menuCustomize" style="@style/MenuIcon" android:contentDescription="@string/menu_customize" android:text="🎨" />
+            <TextView android:id="@+id/menuHide" style="@style/MenuIcon" android:contentDescription="@string/menu_hide" android:text="🙈" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 </FrameLayout>

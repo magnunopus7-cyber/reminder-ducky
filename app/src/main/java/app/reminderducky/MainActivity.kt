@@ -25,6 +25,8 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
@@ -62,7 +64,7 @@ class MainActivity : AppCompatActivity() {
             renderer.look = prefs.look
             renderer.facingRight = false
             renderer.sleepsAtNight = false
-            contentDescription = "Ducky. Tap to say hi."
+            contentDescription = getString(R.string.preview_desc)
         }
         findViewById<FrameLayout>(R.id.previewHolder)
             .addView(preview, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
@@ -100,11 +102,11 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<View>(R.id.btnAdd).setOnClickListener { showEditDialog(null) }
         findViewById<View>(R.id.btnTest).setOnClickListener {
-            val r = Reminder(Reminder.newId(), "This is your test reminder. Quack!", System.currentTimeMillis() + 60_000L, icon = "🦆")
+            val r = Reminder(Reminder.newId(), getString(R.string.test_text), System.currentTimeMillis() + 60_000L, icon = "🦆")
             store.save(r)
             Alarms.schedule(this, r)
             renderList()
-            Toast.makeText(this, "Ducky will quack in about a minute. You can leave the app.", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, R.string.test_toast, Toast.LENGTH_LONG).show()
         }
 
         buildCustomizer()
@@ -197,14 +199,14 @@ class MainActivity : AppCompatActivity() {
             col.addView(View(this).apply { background = swatch(skin.look.material, skin.look.color, dp(56)) },
                 LinearLayout.LayoutParams(dp(56), dp(56)))
             col.addView(TextView(this).apply {
-                text = skin.label
+                setText(skin.label)
                 setTextColor(ContextCompat.getColor(context, R.color.ink))
                 textSize = 14f
                 setTypeface(typeface, android.graphics.Typeface.BOLD)
                 setPadding(0, dp(8), 0, 0)
             })
             col.addView(TextView(this).apply {
-                text = skin.mood
+                setText(skin.mood)
                 setTextColor(ContextCompat.getColor(context, R.color.ink_soft))
                 textSize = 12f
             })
@@ -216,7 +218,7 @@ class MainActivity : AppCompatActivity() {
 
         val materialGroup = findViewById<ChipGroup>(R.id.materialGroup)
         for (m in DuckMaterial.entries) {
-            materialChips[m] = filterChip(m.label).also { materialGroup.addView(it) }
+            materialChips[m] = filterChip(getString(m.label)).also { materialGroup.addView(it) }
         }
         materialGroup.setOnCheckedStateChangeListener { _, ids ->
             if (syncing) return@setOnCheckedStateChangeListener
@@ -227,7 +229,7 @@ class MainActivity : AppCompatActivity() {
         val colorRow = findViewById<LinearLayout>(R.id.colorRow)
         for (c in DuckColor.entries) {
             val dot = View(this).apply {
-                contentDescription = c.label
+                contentDescription = getString(c.label)
                 setOnClickListener { applyLook(prefs.look.copy(color = c)) }
             }
             colorRow.addView(dot, LinearLayout.LayoutParams(dp(40), dp(40)).apply { marginEnd = dp(10) })
@@ -236,7 +238,7 @@ class MainActivity : AppCompatActivity() {
 
         val accessoryGroup = findViewById<ChipGroup>(R.id.accessoryGroup)
         for (a in DuckAccessory.entries) {
-            accessoryChips[a] = filterChip(a.label).also { accessoryGroup.addView(it) }
+            accessoryChips[a] = filterChip(getString(a.label)).also { accessoryGroup.addView(it) }
         }
         accessoryGroup.setOnCheckedStateChangeListener { _, ids ->
             if (syncing) return@setOnCheckedStateChangeListener
@@ -245,11 +247,25 @@ class MainActivity : AppCompatActivity() {
         }
 
         val sizeGroup = findViewById<ChipGroup>(R.id.sizeGroup)
-        val sizeChips = DuckSize.entries.associateWith { s -> filterChip(s.label).also { sizeGroup.addView(it) } }
+        val sizeChips = DuckSize.entries.associateWith { s -> filterChip(getString(s.label)).also { sizeGroup.addView(it) } }
         sizeGroup.check(sizeChips.getValue(prefs.size).id)
         sizeGroup.setOnCheckedStateChangeListener { _, ids ->
             prefs.size = sizeChips.entries.firstOrNull { it.value.id == ids.firstOrNull() }?.key ?: return@setOnCheckedStateChangeListener
             DuckService.instance?.refreshAppearance()
+        }
+
+        // Language: follow the phone, or pick English or Korean just for Ducky.
+        val languageGroup = findViewById<ChipGroup>(R.id.languageGroup)
+        val languages = listOf("" to getString(R.string.lang_auto), "en" to "English", "ko" to "한국어")
+        val current = AppCompatDelegate.getApplicationLocales().toLanguageTags().substringBefore('-')
+        for ((tag, name) in languages) {
+            val chip = filterChip(name).also { languageGroup.addView(it) }
+            if (tag == current) languageGroup.check(chip.id)
+            chip.setOnClickListener {
+                AppCompatDelegate.setApplicationLocales(
+                    if (tag.isEmpty()) LocaleListCompat.getEmptyLocaleList() else LocaleListCompat.forLanguageTags(tag)
+                )
+            }
         }
         syncCustomizer()
     }
@@ -326,10 +342,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun describeTime(r: Reminder): String {
-        if (r.fired) return "Due now. Tap Delete when it's done."
+        if (r.fired) return getString(R.string.due_now)
         val pattern = DateFormat.getBestDateTimePattern(Locale.getDefault(), "EEE d MMM " + if (DateFormat.is24HourFormat(this)) "HH:mm" else "h:mm a")
         val time = DateFormat.format(pattern, r.timeMillis).toString()
-        return if (r.repeat == Repeat.NONE) time else "$time · ${r.repeat.label.lowercase()}"
+        return if (r.repeat == Repeat.NONE) time else "$time · ${getString(r.repeat.label)}"
     }
 
     @SuppressLint("InflateParams")
@@ -379,10 +395,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         val dialog = MaterialAlertDialogBuilder(this)
-            .setTitle(if (existing == null) "New reminder" else "Edit reminder")
+            .setTitle(if (existing == null) R.string.new_reminder else R.string.edit_reminder)
             .setView(view)
-            .setPositiveButton("Save", null)
-            .setNegativeButton("Cancel", null)
+            .setPositiveButton(R.string.save, null)
+            .setNegativeButton(R.string.cancel, null)
             .create()
         // The 3D preview sits on its own layer above dialogs, so hide it meanwhile.
         dialog.setOnShowListener {
@@ -396,7 +412,7 @@ class MainActivity : AppCompatActivity() {
                 try {
                     val text = input.text?.toString()?.trim().orEmpty()
                     if (text.isEmpty()) {
-                        fail("Please type what Ducky should remind you about.")
+                        fail(getString(R.string.err_empty))
                         return@setOnClickListener
                     }
                     val repeat = repeatChips[repeatGroup.checkedChipId] ?: Repeat.NONE
@@ -405,7 +421,7 @@ class MainActivity : AppCompatActivity() {
                     var time = cal.timeInMillis
                     if (time <= now) {
                         if (repeat == Repeat.NONE) {
-                            fail("That time has already passed. Please pick a later time.")
+                            fail(getString(R.string.err_past))
                             return@setOnClickListener
                         }
                         time = repeat.nextAfter(time, now)
@@ -416,10 +432,10 @@ class MainActivity : AppCompatActivity() {
                     Alarms.schedule(this, r)
                     renderList()
                     preview.renderer.react(Mood.HAPPY, 1.5f)
-                    Toast.makeText(this, "Saved! Ducky will remind you.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, R.string.saved, Toast.LENGTH_SHORT).show()
                     dialog.dismiss()
                 } catch (e: Exception) {
-                    fail("Sorry, saving failed: ${e.javaClass.simpleName}: ${e.message}")
+                    fail(getString(R.string.err_save, "${e.javaClass.simpleName}: ${e.message}"))
                 }
             }
         }

@@ -65,14 +65,14 @@
                     style="?attr/borderlessButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="😴 Snooze 10 min" />
+                    android:text="@string/snooze_button" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/bubbleDone"
                     style="?attr/borderlessButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="✅ Done" />
+                    android:text="@string/done_button" />
             </LinearLayout>
         </LinearLayout>
 </FrameLayout>

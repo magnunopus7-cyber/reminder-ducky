@@ -1,38 +1,42 @@
 package app.reminderducky
 
+import androidx.annotation.StringRes
+
 /** Colours are 0xRRGGBB in sRGB; the shader converts them for lighting. */
 private fun rgb(c: Int) = floatArrayOf(((c shr 16) and 255) / 255f, ((c shr 8) and 255) / 255f, (c and 255) / 255f)
 
-enum class DuckMaterial(val label: String, val code: Float) {
-    GLOSSY("Glossy", 0f), METALLIC("Metallic", 1f), CRYSTAL("Crystal", 2f), FLUFFY("Fluffy", 3f),
+enum class DuckMaterial(@StringRes val label: Int, val code: Float) {
+    GLOSSY(R.string.mat_glossy, 0f), METALLIC(R.string.mat_metallic, 1f), CRYSTAL(R.string.mat_crystal, 2f), FLUFFY(R.string.mat_fluffy, 3f),
 }
 
-enum class DuckColor(val label: String, val body: Int, val head: Int = body) {
-    SUNNY("Sunny", 0xFFD01A),
-    BLOSSOM("Blossom", 0xFFA6BA),
-    SKY("Sky", 0x6B9EF2),
-    MINT("Mint", 0x8FE0BE),
-    LAVENDER("Lavender", 0xC2A6FF),
-    SNOW("Snow", 0xF2F5FF),
-    GOLD("Gold", 0xFFB838),
-    SILVER("Silver", 0xEBEBF2),
-    SAILOR("Sailor", 0x6B9EF2, 0xF7F7FF);
+enum class DuckColor(@StringRes val label: Int, val body: Int, val head: Int = body) {
+    SUNNY(R.string.col_sunny, 0xFFD01A),
+    BLOSSOM(R.string.col_blossom, 0xFFA6BA),
+    SKY(R.string.col_sky, 0x6B9EF2),
+    MINT(R.string.col_mint, 0x8FE0BE),
+    LAVENDER(R.string.col_lavender, 0xC2A6FF),
+    SNOW(R.string.col_snow, 0xF2F5FF),
+    GOLD(R.string.col_gold, 0xFFB838),
+    SILVER(R.string.col_silver, 0xEBEBF2),
+    SAILOR(R.string.col_sailor, 0x6B9EF2, 0xF7F7FF);
 
     val bodyRgb get() = rgb(body)
     val headRgb get() = rgb(head)
 }
 
-enum class DuckAccessory(val label: String, val code: Float, val a: Int, val b: Int) {
-    NONE("None", 0f, 0xFFFFFF, 0xFFFFFF),
-    FLOWER("Flower", 1f, 0xFFEBF2, 0xFFD24D),
-    BEANIE("Beanie", 2f, 0x4D80E6, 0x99C2FF),
-    PARTY("Party hat", 3f, 0xFF73A6, 0x73CCFF);
+enum class DuckAccessory(@StringRes val label: Int, val code: Float, val a: Int, val b: Int) {
+    NONE(R.string.acc_none, 0f, 0xFFFFFF, 0xFFFFFF),
+    FLOWER(R.string.acc_flower, 1f, 0xFFEBF2, 0xFFD24D),
+    BEANIE(R.string.acc_beanie, 2f, 0x4D80E6, 0x99C2FF),
+    PARTY(R.string.acc_party, 3f, 0xFF73A6, 0x73CCFF);
 
     val aRgb get() = rgb(a)
     val bRgb get() = rgb(b)
 }
 
-enum class DuckSize(val label: String, val dp: Int) { SMALL("Small", 80), MEDIUM("Medium", 104), LARGE("Large", 136) }
+enum class DuckSize(@StringRes val label: Int, val dp: Int) {
+    SMALL(R.string.size_small, 80), MEDIUM(R.string.size_medium, 104), LARGE(R.string.size_large, 136)
+}
 
 data class DuckLook(
     val material: DuckMaterial = DuckMaterial.GLOSSY,
@@ -43,13 +47,13 @@ data class DuckLook(
 }
 
 /** Ready-made looks, like collectible figures. Each one is just a combination of the options. */
-enum class DuckSkin(val label: String, val mood: String, val look: DuckLook) {
-    CLASSIC("Classic", "Default", DuckLook(DuckMaterial.GLOSSY, DuckColor.SUNNY)),
-    PASTEL("Pastel", "Sweet", DuckLook(DuckMaterial.GLOSSY, DuckColor.BLOSSOM, DuckAccessory.FLOWER)),
-    CRYSTAL("Crystal", "Shiny", DuckLook(DuckMaterial.CRYSTAL, DuckColor.SNOW)),
-    GOLD("Metallic Gold", "Luxurious", DuckLook(DuckMaterial.METALLIC, DuckColor.GOLD)),
-    SILVER("Metallic Silver", "Modern", DuckLook(DuckMaterial.METALLIC, DuckColor.SILVER)),
-    FLUFFY("Fluffy", "Cozy", DuckLook(DuckMaterial.FLUFFY, DuckColor.SUNNY)),
-    COSTUME("Costume", "Playful", DuckLook(DuckMaterial.GLOSSY, DuckColor.SAILOR, DuckAccessory.BEANIE)),
-    PARTY("Party", "Celebrating", DuckLook(DuckMaterial.GLOSSY, DuckColor.SUNNY, DuckAccessory.PARTY)),
+enum class DuckSkin(@StringRes val label: Int, @StringRes val mood: Int, val look: DuckLook) {
+    CLASSIC(R.string.skin_classic, R.string.skin_classic_m, DuckLook(DuckMaterial.GLOSSY, DuckColor.SUNNY)),
+    PASTEL(R.string.skin_pastel, R.string.skin_pastel_m, DuckLook(DuckMaterial.GLOSSY, DuckColor.BLOSSOM, DuckAccessory.FLOWER)),
+    CRYSTAL(R.string.skin_crystal, R.string.skin_crystal_m, DuckLook(DuckMaterial.CRYSTAL, DuckColor.SNOW)),
+    GOLD(R.string.skin_gold, R.string.skin_gold_m, DuckLook(DuckMaterial.METALLIC, DuckColor.GOLD)),
+    SILVER(R.string.skin_silver, R.string.skin_silver_m, DuckLook(DuckMaterial.METALLIC, DuckColor.SILVER)),
+    FLUFFY(R.string.skin_fluffy, R.string.skin_fluffy_m, DuckLook(DuckMaterial.FLUFFY, DuckColor.SUNNY)),
+    COSTUME(R.string.skin_costume, R.string.skin_costume_m, DuckLook(DuckMaterial.GLOSSY, DuckColor.SAILOR, DuckAccessory.BEANIE)),
+    PARTY(R.string.skin_party, R.string.skin_party_m, DuckLook(DuckMaterial.GLOSSY, DuckColor.SUNNY, DuckAccessory.PARTY)),
 }

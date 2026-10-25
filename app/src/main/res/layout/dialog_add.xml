@@ -15,7 +15,7 @@
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="What should the duck remind you about?">
+        android:hint="@string/hint_text">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/inputText"
@@ -67,21 +67,21 @@
             style="@style/Widget.Material3.Chip.Filter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Once" />
+            android:text="@string/repeat_once" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/repeatDaily"
             style="@style/Widget.Material3.Chip.Filter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Every day" />
+            android:text="@string/repeat_daily" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/repeatWeekly"
             style="@style/Widget.Material3.Chip.Filter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Every week" />
+            android:text="@string/repeat_weekly" />
     </com.google.android.material.chip.ChipGroup>
 
     <TextView

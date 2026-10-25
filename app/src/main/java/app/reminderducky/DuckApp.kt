@@ -11,8 +11,8 @@ class DuckApp : Application() {
         super.onCreate()
         val nm = getSystemService(NotificationManager::class.java)
         nm.createNotificationChannel(
-            NotificationChannel(CHANNEL_REMINDERS, "Reminders", NotificationManager.IMPORTANCE_HIGH).apply {
-                description = "Your reminders when they are due, with a quack"
+            NotificationChannel(CHANNEL_REMINDERS, getString(R.string.channel_reminders), NotificationManager.IMPORTANCE_HIGH).apply {
+                description = getString(R.string.channel_reminders_desc)
                 enableVibration(true)
                 setSound(
                     quackUri(this@DuckApp),
@@ -27,8 +27,8 @@ class DuckApp : Application() {
         // first version's channel (default sound) is replaced.
         nm.deleteNotificationChannel("reminders")
         nm.createNotificationChannel(
-            NotificationChannel(CHANNEL_DUCK, "Floating duck", NotificationManager.IMPORTANCE_MIN).apply {
-                description = "Android requires this while the duck is on screen. You can hide it."
+            NotificationChannel(CHANNEL_DUCK, getString(R.string.channel_duck), NotificationManager.IMPORTANCE_MIN).apply {
+                description = getString(R.string.channel_duck_desc)
                 setShowBadge(false)
             }
         )

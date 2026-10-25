@@ -5,8 +5,8 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.util.Calendar
 
-enum class Repeat(val label: String) {
-    NONE("Once"), DAILY("Every day"), WEEKLY("Every week");
+enum class Repeat(@androidx.annotation.StringRes val label: Int) {
+    NONE(R.string.repeat_once), DAILY(R.string.repeat_daily), WEEKLY(R.string.repeat_weekly);
 
     /** The first occurrence strictly after [now], starting from [time]. */
     fun nextAfter(time: Long, now: Long): Long {

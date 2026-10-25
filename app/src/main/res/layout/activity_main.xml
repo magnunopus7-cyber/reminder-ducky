@@ -56,7 +56,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Ducky 💛"
+                        android:text="@string/app_title"
                         android:textColor="#FFFFFF"
                         android:textSize="40sp"
                         android:textStyle="bold" />
@@ -64,7 +64,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Your little reminder buddy"
+                        android:text="@string/tagline"
                         android:textColor="#FFFFFF"
                         android:textSize="17sp"
                         android:textStyle="bold" />
@@ -73,7 +73,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="6dp"
-                        android:text="Floats over your apps, keeps you on track and makes every day a little more joyful. Tap me!"
+                        android:text="@string/header_blurb"
                         android:textColor="#F2FFFFFF"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -109,36 +109,36 @@
 
                     <TextView
                         style="@style/SectionTitle"
-                        android:text="Let Ducky move in 🏡" />
+                        android:text="@string/setup_title" />
 
                     <TextView
                         style="@style/SectionSub"
-                        android:text="Tap each button. Android opens a settings page: switch it on, then come back here." />
+                        android:text="@string/setup_help" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnOverlay"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Let Ducky float over other apps" />
+                        android:text="@string/perm_overlay" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnNotif"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Allow notifications" />
+                        android:text="@string/perm_notif" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnExact"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Allow reminders at the exact time" />
+                        android:text="@string/perm_exact" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnBattery"
                         style="?attr/materialButtonOutlinedStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Don't let battery saver put Ducky to sleep" />
+                        android:text="@string/perm_battery" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -164,13 +164,13 @@
                             style="@style/SectionTitle"
                             android:layout_width="0dp"
                             android:layout_weight="1"
-                            android:text="Your reminders" />
+                            android:text="@string/your_reminders" />
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnAdd"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="+ Add" />
+                            android:text="@string/add" />
                     </LinearLayout>
 
                     <TextView
@@ -179,7 +179,7 @@
                         android:gravity="center"
                         android:paddingTop="16dp"
                         android:paddingBottom="8dp"
-                        android:text="No reminders yet. Tap + Add, or tap the floating Ducky any time." />
+                        android:text="@string/empty" />
 
                     <LinearLayout
                         android:id="@+id/listContainer"
@@ -193,7 +193,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="Try it: remind me in 1 minute" />
+                        android:text="@string/try_it" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -201,12 +201,12 @@
             <TextView
                 style="@style/SectionTitle"
                 android:layout_marginStart="4dp"
-                android:text="Collectible Ducky skins" />
+                android:text="@string/skins_title" />
 
             <TextView
                 style="@style/SectionSub"
                 android:layout_marginStart="4dp"
-                android:text="Choose your favourite look, or collect them all!" />
+                android:text="@string/skins_sub" />
 
             <HorizontalScrollView
                 android:layout_width="match_parent"
@@ -240,13 +240,13 @@
 
                     <TextView
                         style="@style/SectionTitle"
-                        android:text="Customize your duck" />
+                        android:text="@string/customize_title" />
 
                     <TextView
                         style="@style/SectionSub"
-                        android:text="Change the material, colour and accessories any time." />
+                        android:text="@string/customize_sub" />
 
-                    <TextView style="@style/FieldLabel" android:text="Material" />
+                    <TextView style="@style/FieldLabel" android:text="@string/label_material" />
 
                     <com.google.android.material.chip.ChipGroup
                         android:id="@+id/materialGroup"
@@ -255,7 +255,7 @@
                         app:selectionRequired="true"
                         app:singleSelection="true" />
 
-                    <TextView style="@style/FieldLabel" android:text="Colour" />
+                    <TextView style="@style/FieldLabel" android:text="@string/label_colour" />
 
                     <HorizontalScrollView
                         android:layout_width="match_parent"
@@ -271,7 +271,7 @@
                             android:paddingBottom="6dp" />
                     </HorizontalScrollView>
 
-                    <TextView style="@style/FieldLabel" android:text="Accessory" />
+                    <TextView style="@style/FieldLabel" android:text="@string/label_accessory" />
 
                     <com.google.android.material.chip.ChipGroup
                         android:id="@+id/accessoryGroup"
@@ -280,10 +280,19 @@
                         app:selectionRequired="true"
                         app:singleSelection="true" />
 
-                    <TextView style="@style/FieldLabel" android:text="Size" />
+                    <TextView style="@style/FieldLabel" android:text="@string/label_size" />
 
                     <com.google.android.material.chip.ChipGroup
                         android:id="@+id/sizeGroup"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:selectionRequired="true"
+                        app:singleSelection="true" />
+
+                    <TextView style="@style/FieldLabel" android:text="@string/label_language" />
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/languageGroup"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:selectionRequired="true"
@@ -294,14 +303,14 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="Show Ducky over other apps"
+                        android:text="@string/show_duck"
                         android:textColor="@color/ink" />
 
                     <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/switchQuack"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Quack when I tap Ducky"
+                        android:text="@string/tap_quack"
                         android:textColor="@color/ink" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

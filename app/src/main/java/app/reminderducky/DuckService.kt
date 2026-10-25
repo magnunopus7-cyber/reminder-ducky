@@ -118,8 +118,8 @@ class DuckService : Service() {
         )
         val n: Notification = NotificationCompat.Builder(this, DuckApp.CHANNEL_DUCK)
             .setSmallIcon(R.drawable.ic_stat_duck)
-            .setContentTitle("Ducky is keeping you company")
-            .setContentText("Tap to open your reminders")
+            .setContentTitle(getString(R.string.fg_title))
+            .setContentText(getString(R.string.fg_text))
             .setContentIntent(open)
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_MIN)
@@ -142,7 +142,7 @@ class DuckService : Service() {
         val view = DuckGLView(this).apply { renderer.look = prefs.look }
         val root = FrameLayout(this).apply {
             addView(view, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
-            contentDescription = "Ducky. Tap for quick actions."
+            contentDescription = getString(R.string.duck_desc)
         }
         root.setOnTouchListener(DragListener())
         duckView = view
@@ -309,7 +309,7 @@ class DuckService : Service() {
 
     private fun hideDuckByUser() {
         prefs.showDuck = false
-        Toast.makeText(this, "Ducky is napping. Reminders still arrive as notifications. Open the Ducky app to bring it back.", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, R.string.napping, Toast.LENGTH_LONG).show()
         stopSelf()
     }
 
@@ -444,7 +444,7 @@ class DuckService : Service() {
         view.findViewById<View>(R.id.bubbleDone).setOnClickListener { ReminderActions.done(this, id) }
         view.findViewById<View>(R.id.bubbleSnooze).setOnClickListener {
             ReminderActions.snooze(this, id)
-            Toast.makeText(this, "Snoozed for ${ReminderActions.SNOOZE_MINUTES} minutes", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.snoozed, ReminderActions.SNOOZE_MINUTES), Toast.LENGTH_SHORT).show()
         }
         positionBubble()
     }
