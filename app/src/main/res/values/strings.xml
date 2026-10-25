@@ -9,7 +9,7 @@
     <string name="your_reminders">Your reminders</string>
     <string name="add">\+ Add</string>
     <string name="empty">No reminders yet. Tap + Add, or tap the floating Ducky any time.</string>
-    <string name="hint_text">What should the duck remind you about?</string>
+    <string name="hint_text">What to remind you</string>
     <string name="try_it">Try it: remind me in 1 minute</string>
     <string name="skins_title">Collectible Ducky skins</string>
     <string name="skins_sub">Choose your favourite look, or collect them all!</string>

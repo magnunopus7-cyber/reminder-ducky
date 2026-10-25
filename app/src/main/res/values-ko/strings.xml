@@ -9,7 +9,7 @@
     <string name="your_reminders">내 알림</string>
     <string name="add">\+ 추가</string>
     <string name="empty">아직 알림이 없어요. + 추가를 누르거나 떠 있는 덕희를 눌러 보세요.</string>
-    <string name="hint_text">덕희가 무엇을 알려 줄까요?</string>
+    <string name="hint_text">알릴 내용</string>
     <string name="try_it">테스트: 1분 뒤에 알려 줘</string>
     <string name="skins_title">수집용 덕희 스킨</string>
     <string name="skins_sub">마음에 드는 모습을 고르거나 모두 모아 보세요!</string>
