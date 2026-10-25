@@ -3,7 +3,6 @@ package app.reminderducky
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
-import android.app.TimePickerDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -354,7 +353,7 @@ class MainActivity : AppCompatActivity() {
         val view = LayoutInflater.from(this).inflate(R.layout.dialog_add, null)
         val input = view.findViewById<TextInputEditText>(R.id.inputText)
         val btnDate = view.findViewById<MaterialButton>(R.id.btnDate)
-        val btnTime = view.findViewById<MaterialButton>(R.id.btnTime)
+        val timeWheel = view.findViewById<android.widget.TimePicker>(R.id.timeWheel)
         val repeatGroup = view.findViewById<ChipGroup>(R.id.repeatGroup)
         val iconGroup = view.findViewById<ChipGroup>(R.id.iconGroup)
 
@@ -375,7 +374,6 @@ class MainActivity : AppCompatActivity() {
         }
         fun updateButtons() {
             btnDate.text = DateFormat.format(DateFormat.getBestDateTimePattern(Locale.getDefault(), "EEE d MMM"), cal)
-            btnTime.text = DateFormat.getTimeFormat(this).format(cal.time)
         }
         updateButtons()
         input.setText(existing?.text ?: "")
@@ -387,12 +385,12 @@ class MainActivity : AppCompatActivity() {
                 updateButtons()
             }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show()
         }
-        btnTime.setOnClickListener {
-            TimePickerDialog(this, { _, h, min ->
-                cal.set(Calendar.HOUR_OF_DAY, h)
-                cal.set(Calendar.MINUTE, min)
-                updateButtons()
-            }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), DateFormat.is24HourFormat(this)).show()
+        timeWheel.setIs24HourView(DateFormat.is24HourFormat(this))
+        timeWheel.hour = cal.get(Calendar.HOUR_OF_DAY)
+        timeWheel.minute = cal.get(Calendar.MINUTE)
+        timeWheel.setOnTimeChangedListener { _, h, min ->
+            cal.set(Calendar.HOUR_OF_DAY, h)
+            cal.set(Calendar.MINUTE, min)
         }
 
         val dialog = MaterialAlertDialogBuilder(this)
