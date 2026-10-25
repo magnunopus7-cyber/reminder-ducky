@@ -139,7 +139,10 @@ class DuckService : Service() {
     private fun addDuck() {
         val size = duckSizePx()
         duckParams = overlayParams(size, size, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
-        val view = DuckGLView(this).apply { renderer.look = prefs.look }
+        val view = DuckGLView(this).apply {
+            renderer.look = prefs.look
+            renderer.sticker = prefs.sticker
+        }
         val root = FrameLayout(this).apply {
             addView(view, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
             contentDescription = getString(R.string.duck_desc)
@@ -182,6 +185,7 @@ class DuckService : Service() {
     /** Called from the app when the finish or size changes. */
     fun refreshAppearance() {
         duckView?.renderer?.look = prefs.look
+        duckView?.renderer?.sticker = prefs.sticker
         if (duckRoot != null && duckParams.width != duckSizePx()) placeFromPrefs()
     }
 

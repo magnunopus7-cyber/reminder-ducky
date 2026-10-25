@@ -6,7 +6,6 @@ import android.app.DatePickerDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
-import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -17,6 +16,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -61,6 +61,7 @@ class MainActivity : AppCompatActivity() {
 
         preview = DuckGLView(this).apply {
             renderer.look = prefs.look
+            renderer.sticker = prefs.sticker
             renderer.facingRight = false
             renderer.sleepsAtNight = false
             renderer.sleepsWhenIdle = false
@@ -123,8 +124,12 @@ class MainActivity : AppCompatActivity() {
     private fun handleAction(intent: Intent?) {
         when (intent?.action) {
             ACTION_ADD -> findViewById<View>(R.id.btnAdd).post { showEditDialog(null) }
-            ACTION_CUSTOMIZE -> scrollTo(R.id.customizeCard)
+            ACTION_CUSTOMIZE -> {
+                unfold("customizeCard")
+                scrollTo(R.id.customizeCard)
+            }
             ACTION_TODO -> {
+                unfold("todoCard")
                 scrollTo(R.id.todoCard)
                 findViewById<View>(R.id.todoInput).let { input ->
                     input.post {
@@ -242,90 +247,138 @@ class MainActivity : AppCompatActivity() {
 
     private fun dp(v: Int) = (v * resources.displayMetrics.density).roundToInt()
 
+    /** Switches to a 3D look (and away from any picture duck). */
     private fun applyLook(look: DuckLook) {
         prefs.look = look
-        preview.renderer.look = look
+        prefs.sticker = null
+        showChosenDuck(Mood.HAPPY)
+    }
+
+    private fun applySticker(sticker: DuckSticker) {
+        prefs.sticker = sticker
+        showChosenDuck(Mood.HAPPY)
+    }
+
+    private fun showChosenDuck(mood: Mood) {
+        preview.renderer.look = prefs.look
+        preview.renderer.sticker = prefs.sticker
         preview.renderer.squash()
-        preview.renderer.react(Mood.HAPPY, 1.5f)
+        preview.renderer.react(mood, 1.5f)
         DuckService.instance?.refreshAppearance()
         syncCustomizer()
     }
 
+    // ---- Folding sections ----
+
+    /** Tapping [key]Head shows or hides [key]Body; the choice is remembered. */
+    private fun foldable(key: String, openByDefault: Boolean) {
+        val head = findViewById<View>(resources.getIdentifier("${key}Head", "id", packageName))
+        val body = findViewById<View>(resources.getIdentifier("${key}Body", "id", packageName))
+        val chevron = findViewById<View>(resources.getIdentifier("${key}Chevron", "id", packageName))
+        fun show(open: Boolean) {
+            body.visibility = if (open) View.VISIBLE else View.GONE
+            chevron.rotation = if (open) 180f else 0f
+        }
+        show(prefs.isOpen(key, openByDefault))
+        head.contentDescription = getString(R.string.collapse_toggle)
+        head.setOnClickListener {
+            val open = body.visibility != View.VISIBLE
+            prefs.setOpen(key, open)
+            show(open)
+        }
+    }
+
+    /** Opens a section, for example when the duck's menu sends you straight to it. */
+    private fun unfold(key: String) {
+        prefs.setOpen(key, true)
+        findViewById<View>(resources.getIdentifier("${key}Body", "id", packageName)).visibility = View.VISIBLE
+        findViewById<View>(resources.getIdentifier("${key}Chevron", "id", packageName)).rotation = 180f
+    }
+
+    private fun setUpFolds() {
+        foldable("setupCard", true)
+        foldable("remindersCard", true)
+        foldable("todoCard", true)
+        foldable("skinsCard", false)
+        foldable("customizeCard", false)
+        for (key in listOf("material", "colour", "accessory", "size", "language")) foldable(key, false)
+    }
+
+    // ---- Picture options ----
+
     private val skinCards = mutableMapOf<DuckSkin, MaterialCardView>()
-    private val colorDots = mutableMapOf<DuckColor, View>()
-    private val materialChips = mutableMapOf<DuckMaterial, Chip>()
-    private val accessoryChips = mutableMapOf<DuckAccessory, Chip>()
-    private var syncing = false
+    private val stickerCards = mutableMapOf<DuckSticker, MaterialCardView>()
+    private val materialCards = mutableMapOf<DuckMaterial, MaterialCardView>()
+    private val colorCards = mutableMapOf<DuckColor, MaterialCardView>()
+    private val accessoryCards = mutableMapOf<DuckAccessory, MaterialCardView>()
+    private val sizeCards = mutableMapOf<DuckSize, MaterialCardView>()
+
+    /** A small card with a picture and a name, outlined when it is the current choice. */
+    private fun optionCard(row: LinearLayout, image: Int, label: Int, imageDp: Int = 64, onPick: () -> Unit): MaterialCardView {
+        val card = MaterialCardView(this).apply {
+            radius = dp(18).toFloat()
+            strokeWidth = dp(2)
+            cardElevation = dp(1).toFloat()
+            setOnClickListener { onPick() }
+        }
+        val col = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER_HORIZONTAL
+            setPadding(dp(6), dp(8), dp(6), dp(8))
+        }
+        val box = FrameLayout(this)
+        box.addView(ImageView(this).apply {
+            setImageResource(image)
+            scaleType = ImageView.ScaleType.FIT_CENTER
+            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+        }, FrameLayout.LayoutParams(dp(imageDp), dp(imageDp), Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM))
+        col.addView(box, LinearLayout.LayoutParams(dp(72), dp(72)))
+        col.addView(TextView(this).apply {
+            setText(label)
+            setTextColor(ContextCompat.getColor(context, R.color.ink))
+            textSize = 13f
+            gravity = Gravity.CENTER
+            maxLines = 2
+            setPadding(0, dp(4), 0, 0)
+        }, LinearLayout.LayoutParams(dp(80), LinearLayout.LayoutParams.WRAP_CONTENT))
+        card.addView(col)
+        row.addView(card, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+            .apply { marginEnd = dp(8); topMargin = dp(4); bottomMargin = dp(4); marginStart = dp(2) })
+        return card
+    }
 
     private fun buildCustomizer() {
+        setUpFolds()
         val skinRow = findViewById<LinearLayout>(R.id.skinRow)
         for (skin in DuckSkin.entries) {
-            val card = MaterialCardView(this).apply {
-                radius = dp(20).toFloat()
-                strokeWidth = dp(2)
-                setOnClickListener { applyLook(skin.look) }
-            }
-            val col = LinearLayout(this).apply {
-                orientation = LinearLayout.VERTICAL
-                gravity = Gravity.CENTER_HORIZONTAL
-                setPadding(dp(14), dp(14), dp(14), dp(12))
-            }
-            col.addView(View(this).apply { background = swatch(skin.look.material, skin.look.color, dp(56)) },
-                LinearLayout.LayoutParams(dp(56), dp(56)))
-            col.addView(TextView(this).apply {
-                setText(skin.label)
-                setTextColor(ContextCompat.getColor(context, R.color.ink))
-                textSize = 14f
-                setTypeface(typeface, android.graphics.Typeface.BOLD)
-                setPadding(0, dp(8), 0, 0)
-            })
-            col.addView(TextView(this).apply {
-                setText(skin.mood)
-                setTextColor(ContextCompat.getColor(context, R.color.ink_soft))
-                textSize = 12f
-            })
-            card.addView(col, FrameLayout.LayoutParams(dp(112), FrameLayout.LayoutParams.WRAP_CONTENT))
-            skinRow.addView(card, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-                .apply { marginEnd = dp(10); topMargin = dp(4); bottomMargin = dp(4) })
-            skinCards[skin] = card
+            skinCards[skin] = optionCard(skinRow, skin.thumb, skin.label) { applyLook(skin.look) }
         }
-
-        val materialGroup = findViewById<ChipGroup>(R.id.materialGroup)
+        val stickerRow = findViewById<LinearLayout>(R.id.stickerRow)
+        for (st in DuckSticker.entries) {
+            stickerCards[st] = optionCard(stickerRow, st.image, st.label) { applySticker(st) }
+        }
+        val materialRow = findViewById<LinearLayout>(R.id.materialRow)
         for (m in DuckMaterial.entries) {
-            materialChips[m] = filterChip(getString(m.label)).also { materialGroup.addView(it) }
+            materialCards[m] = optionCard(materialRow, m.thumb, m.label) { applyLook(prefs.look.copy(material = m)) }
         }
-        materialGroup.setOnCheckedStateChangeListener { _, ids ->
-            if (syncing) return@setOnCheckedStateChangeListener
-            val m = materialChips.entries.firstOrNull { it.value.id == ids.firstOrNull() }?.key ?: return@setOnCheckedStateChangeListener
-            applyLook(prefs.look.copy(material = m))
-        }
-
         val colorRow = findViewById<LinearLayout>(R.id.colorRow)
         for (c in DuckColor.entries) {
-            val dot = View(this).apply {
-                contentDescription = getString(c.label)
-                setOnClickListener { applyLook(prefs.look.copy(color = c)) }
-            }
-            colorRow.addView(dot, LinearLayout.LayoutParams(dp(40), dp(40)).apply { marginEnd = dp(10) })
-            colorDots[c] = dot
+            colorCards[c] = optionCard(colorRow, c.thumb, c.label) { applyLook(prefs.look.copy(color = c)) }
         }
-
-        val accessoryGroup = findViewById<ChipGroup>(R.id.accessoryGroup)
+        val accessoryRow = findViewById<LinearLayout>(R.id.accessoryRow)
         for (a in DuckAccessory.entries) {
-            accessoryChips[a] = filterChip(getString(a.label)).also { accessoryGroup.addView(it) }
+            accessoryCards[a] = optionCard(accessoryRow, a.thumb, a.label) { applyLook(prefs.look.copy(accessory = a)) }
         }
-        accessoryGroup.setOnCheckedStateChangeListener { _, ids ->
-            if (syncing) return@setOnCheckedStateChangeListener
-            val a = accessoryChips.entries.firstOrNull { it.value.id == ids.firstOrNull() }?.key ?: return@setOnCheckedStateChangeListener
-            applyLook(prefs.look.copy(accessory = a))
-        }
-
-        val sizeGroup = findViewById<ChipGroup>(R.id.sizeGroup)
-        val sizeChips = DuckSize.entries.associateWith { s -> filterChip(getString(s.label)).also { sizeGroup.addView(it) } }
-        sizeGroup.check(sizeChips.getValue(prefs.size).id)
-        sizeGroup.setOnCheckedStateChangeListener { _, ids ->
-            prefs.size = sizeChips.entries.firstOrNull { it.value.id == ids.firstOrNull() }?.key ?: return@setOnCheckedStateChangeListener
-            DuckService.instance?.refreshAppearance()
+        // Sizes: the same duck drawn bigger and bigger.
+        val sizeRow = findViewById<LinearLayout>(R.id.sizeRow)
+        val sizes = DuckSize.entries
+        for ((i, s) in sizes.withIndex()) {
+            sizeCards[s] = optionCard(sizeRow, R.drawable.thumb_skin_classic, s.label, imageDp = 30 + i * 42 / (sizes.size - 1)) {
+                prefs.size = s
+                DuckService.instance?.refreshAppearance()
+                preview.renderer.squash()
+                syncCustomizer()
+            }
         }
 
         // Language: follow the phone, or pick English or Korean just for Ducky.
@@ -334,7 +387,10 @@ class MainActivity : AppCompatActivity() {
         val current = AppCompatDelegate.getApplicationLocales().toLanguageTags().substringBefore('-')
         for ((tag, name) in languages) {
             val chip = filterChip(name).also { languageGroup.addView(it) }
-            if (tag == current) languageGroup.check(chip.id)
+            if (tag == current) {
+                languageGroup.check(chip.id)
+                findViewById<TextView>(R.id.languageValue).text = name
+            }
             chip.setOnClickListener {
                 AppCompatDelegate.setApplicationLocales(
                     if (tag.isEmpty()) LocaleListCompat.getEmptyLocaleList() else LocaleListCompat.forLanguageTags(tag)
@@ -350,46 +406,25 @@ class MainActivity : AppCompatActivity() {
             text = label
         }
 
-    /** Marks the current skin, material, colour and accessory as selected. */
+    /** Outlines the current choices and shows them next to each folded title. */
     private fun syncCustomizer() {
-        syncing = true
         val look = prefs.look
+        val sticker = prefs.sticker
         val accent = ContextCompat.getColor(this, R.color.duck_yellow)
-        for ((skin, card) in skinCards) {
-            card.strokeColor = if (skin.look == look) accent else Color.TRANSPARENT
+        fun <K> mark(cards: Map<K, MaterialCardView>, chosen: K?) {
+            for ((k, card) in cards) card.strokeColor = if (k == chosen) accent else Color.TRANSPARENT
         }
-        materialChips[look.material]?.isChecked = true
-        accessoryChips[look.accessory]?.isChecked = true
-        for ((c, dot) in colorDots) {
-            dot.background = swatch(look.material, c, dp(40), selected = c == look.color)
-        }
-        syncing = false
+        mark(skinCards, if (sticker == null) DuckSkin.entries.firstOrNull { it.look == look } else null)
+        mark(stickerCards, sticker)
+        mark(materialCards, look.material)
+        mark(colorCards, look.color)
+        mark(accessoryCards, look.accessory)
+        mark(sizeCards, prefs.size)
+        findViewById<TextView>(R.id.materialValue).setText(look.material.label)
+        findViewById<TextView>(R.id.colourValue).setText(look.color.label)
+        findViewById<TextView>(R.id.accessoryValue).setText(look.accessory.label)
+        findViewById<TextView>(R.id.sizeValue).setText(prefs.size.label)
     }
-
-    /** A round swatch that hints at the material: shine for metal, rainbow for crystal. */
-    private fun swatch(material: DuckMaterial, color: DuckColor, size: Int, selected: Boolean = false): GradientDrawable {
-        val body = 0xFF000000.toInt() or color.body
-        val head = 0xFF000000.toInt() or color.head
-        val colors = when (material) {
-            DuckMaterial.METALLIC -> intArrayOf(Color.WHITE, body, darken(body))
-            DuckMaterial.CRYSTAL -> intArrayOf(0xFFFFFFFF.toInt(), 0xFFE6D9FF.toInt(), 0xFFCDEBFF.toInt(), 0xFFFFE3F1.toInt())
-            else -> intArrayOf(lighten(head), body)
-        }
-        return GradientDrawable(GradientDrawable.Orientation.TL_BR, colors).apply {
-            shape = GradientDrawable.OVAL
-            gradientType = GradientDrawable.RADIAL_GRADIENT
-            gradientRadius = size * 0.75f
-            setGradientCenter(0.35f, 0.3f)
-            if (selected) setStroke(dp(3), ContextCompat.getColor(this@MainActivity, R.color.ink))
-            else setStroke(dp(1), 0x22000000)
-        }
-    }
-
-    private fun lighten(c: Int) = Color.rgb(
-        (Color.red(c) + 255) / 2, (Color.green(c) + 255) / 2, (Color.blue(c) + 255) / 2
-    )
-
-    private fun darken(c: Int) = Color.rgb(Color.red(c) * 6 / 10, Color.green(c) * 6 / 10, Color.blue(c) * 6 / 10)
 
     // ---- Reminders ----
 

@@ -1,34 +1,38 @@
 package app.reminderducky
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 
 /** Colours are 0xRRGGBB in sRGB; the shader converts them for lighting. */
 private fun rgb(c: Int) = floatArrayOf(((c shr 16) and 255) / 255f, ((c shr 8) and 255) / 255f, (c and 255) / 255f)
 
-enum class DuckMaterial(@StringRes val label: Int, val code: Float) {
-    GLOSSY(R.string.mat_glossy, 0f), METALLIC(R.string.mat_metallic, 1f), CRYSTAL(R.string.mat_crystal, 2f), FLUFFY(R.string.mat_fluffy, 3f),
+enum class DuckMaterial(@StringRes val label: Int, val code: Float, @DrawableRes val thumb: Int) {
+    GLOSSY(R.string.mat_glossy, 0f, R.drawable.thumb_mat_glossy),
+    METALLIC(R.string.mat_metallic, 1f, R.drawable.thumb_mat_metallic),
+    CRYSTAL(R.string.mat_crystal, 2f, R.drawable.thumb_mat_crystal),
+    FLUFFY(R.string.mat_fluffy, 3f, R.drawable.thumb_mat_fluffy),
 }
 
-enum class DuckColor(@StringRes val label: Int, val body: Int, val head: Int = body) {
-    SUNNY(R.string.col_sunny, 0xFFD01A),
-    BLOSSOM(R.string.col_blossom, 0xFFA6BA),
-    SKY(R.string.col_sky, 0x6B9EF2),
-    MINT(R.string.col_mint, 0x8FE0BE),
-    LAVENDER(R.string.col_lavender, 0xC2A6FF),
-    SNOW(R.string.col_snow, 0xF2F5FF),
-    GOLD(R.string.col_gold, 0xFFB838),
-    SILVER(R.string.col_silver, 0xEBEBF2),
-    SAILOR(R.string.col_sailor, 0x6B9EF2, 0xF7F7FF);
+enum class DuckColor(@StringRes val label: Int, @DrawableRes val thumb: Int, val body: Int, val head: Int = body) {
+    SUNNY(R.string.col_sunny, R.drawable.thumb_col_sunny, 0xFFD01A),
+    BLOSSOM(R.string.col_blossom, R.drawable.thumb_col_blossom, 0xFFA6BA),
+    SKY(R.string.col_sky, R.drawable.thumb_col_sky, 0x6B9EF2),
+    MINT(R.string.col_mint, R.drawable.thumb_col_mint, 0x8FE0BE),
+    LAVENDER(R.string.col_lavender, R.drawable.thumb_col_lavender, 0xC2A6FF),
+    SNOW(R.string.col_snow, R.drawable.thumb_col_snow, 0xF2F5FF),
+    GOLD(R.string.col_gold, R.drawable.thumb_col_gold, 0xFFB838),
+    SILVER(R.string.col_silver, R.drawable.thumb_col_silver, 0xEBEBF2),
+    SAILOR(R.string.col_sailor, R.drawable.thumb_col_sailor, 0x6B9EF2, 0xF7F7FF);
 
     val bodyRgb get() = rgb(body)
     val headRgb get() = rgb(head)
 }
 
-enum class DuckAccessory(@StringRes val label: Int, val code: Float, val a: Int, val b: Int) {
-    NONE(R.string.acc_none, 0f, 0xFFFFFF, 0xFFFFFF),
-    FLOWER(R.string.acc_flower, 1f, 0xFFEBF2, 0xFFD24D),
-    BEANIE(R.string.acc_beanie, 2f, 0x4D80E6, 0x99C2FF),
-    PARTY(R.string.acc_party, 3f, 0xFF73A6, 0x73CCFF);
+enum class DuckAccessory(@StringRes val label: Int, @DrawableRes val thumb: Int, val code: Float, val a: Int, val b: Int) {
+    NONE(R.string.acc_none, R.drawable.thumb_acc_none, 0f, 0xFFFFFF, 0xFFFFFF),
+    FLOWER(R.string.acc_flower, R.drawable.thumb_acc_flower, 1f, 0xFFEBF2, 0xFFD24D),
+    BEANIE(R.string.acc_beanie, R.drawable.thumb_acc_beanie, 2f, 0x4D80E6, 0x99C2FF),
+    PARTY(R.string.acc_party, R.drawable.thumb_acc_party, 3f, 0xFF73A6, 0x73CCFF);
 
     val aRgb get() = rgb(a)
     val bRgb get() = rgb(b)
@@ -48,13 +52,36 @@ data class DuckLook(
 }
 
 /** Ready-made looks, like collectible figures. Each one is just a combination of the options. */
-enum class DuckSkin(@StringRes val label: Int, @StringRes val mood: Int, val look: DuckLook) {
-    CLASSIC(R.string.skin_classic, R.string.skin_classic_m, DuckLook(DuckMaterial.GLOSSY, DuckColor.SUNNY)),
-    PASTEL(R.string.skin_pastel, R.string.skin_pastel_m, DuckLook(DuckMaterial.GLOSSY, DuckColor.BLOSSOM, DuckAccessory.FLOWER)),
-    CRYSTAL(R.string.skin_crystal, R.string.skin_crystal_m, DuckLook(DuckMaterial.CRYSTAL, DuckColor.SNOW)),
-    GOLD(R.string.skin_gold, R.string.skin_gold_m, DuckLook(DuckMaterial.METALLIC, DuckColor.GOLD)),
-    SILVER(R.string.skin_silver, R.string.skin_silver_m, DuckLook(DuckMaterial.METALLIC, DuckColor.SILVER)),
-    FLUFFY(R.string.skin_fluffy, R.string.skin_fluffy_m, DuckLook(DuckMaterial.FLUFFY, DuckColor.SUNNY)),
-    COSTUME(R.string.skin_costume, R.string.skin_costume_m, DuckLook(DuckMaterial.GLOSSY, DuckColor.SAILOR, DuckAccessory.BEANIE)),
-    PARTY(R.string.skin_party, R.string.skin_party_m, DuckLook(DuckMaterial.GLOSSY, DuckColor.SUNNY, DuckAccessory.PARTY)),
+enum class DuckSkin(@StringRes val label: Int, @DrawableRes val thumb: Int, val look: DuckLook) {
+    CLASSIC(R.string.skin_classic, R.drawable.thumb_skin_classic, DuckLook(DuckMaterial.GLOSSY, DuckColor.SUNNY)),
+    PASTEL(R.string.skin_pastel, R.drawable.thumb_skin_pastel, DuckLook(DuckMaterial.GLOSSY, DuckColor.BLOSSOM, DuckAccessory.FLOWER)),
+    CRYSTAL(R.string.skin_crystal, R.drawable.thumb_skin_crystal, DuckLook(DuckMaterial.CRYSTAL, DuckColor.SNOW)),
+    GOLD(R.string.skin_gold, R.drawable.thumb_skin_gold, DuckLook(DuckMaterial.METALLIC, DuckColor.GOLD)),
+    SILVER(R.string.skin_silver, R.drawable.thumb_skin_silver, DuckLook(DuckMaterial.METALLIC, DuckColor.SILVER)),
+    FLUFFY(R.string.skin_fluffy, R.drawable.thumb_skin_fluffy, DuckLook(DuckMaterial.FLUFFY, DuckColor.SUNNY)),
+    COSTUME(R.string.skin_costume, R.drawable.thumb_skin_costume, DuckLook(DuckMaterial.GLOSSY, DuckColor.SAILOR, DuckAccessory.BEANIE)),
+    PARTY(R.string.skin_party, R.drawable.thumb_skin_party, DuckLook(DuckMaterial.GLOSSY, DuckColor.SUNNY, DuckAccessory.PARTY)),
+}
+
+/** Picture ducks: a flat image that floats, hops and dozes like the 3D duck. */
+enum class DuckSticker(@StringRes val label: Int, @DrawableRes val image: Int) {
+    SAILOR(R.string.st_sailor, R.drawable.sticker_sailor),
+    FROG(R.string.st_frog, R.drawable.sticker_frog),
+    NIGHTCAP(R.string.st_nightcap, R.drawable.sticker_nightcap),
+    PARTY_HAT(R.string.st_party_hat, R.drawable.sticker_party_hat),
+    DUCKLING(R.string.st_duckling, R.drawable.sticker_duckling),
+    SUNGLASSES(R.string.st_sunglasses, R.drawable.sticker_sunglasses),
+    BACKPACK(R.string.st_backpack, R.drawable.sticker_backpack),
+    HEART(R.string.st_heart, R.drawable.sticker_heart),
+    MUSIC(R.string.st_music, R.drawable.sticker_music),
+    BEAR(R.string.st_bear, R.drawable.sticker_bear),
+    BATH(R.string.st_bath, R.drawable.sticker_bath),
+    HERO(R.string.st_hero, R.drawable.sticker_hero),
+    SUNHAT(R.string.st_sunhat, R.drawable.sticker_sunhat),
+    BOOKWORM(R.string.st_bookworm, R.drawable.sticker_bookworm),
+    CLOUD(R.string.st_cloud, R.drawable.sticker_cloud),
+    SPROUT(R.string.st_sprout, R.drawable.sticker_sprout),
+    WINK(R.string.st_wink, R.drawable.sticker_wink),
+    SNORKEL(R.string.st_snorkel, R.drawable.sticker_snorkel),
+    BANDANA(R.string.st_bandana, R.drawable.sticker_bandana),
 }
