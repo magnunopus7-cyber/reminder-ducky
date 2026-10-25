@@ -24,6 +24,7 @@ data class Reminder(
     val text: String,
     val timeMillis: Long,
     val repeat: Repeat = Repeat.NONE,
+    val icon: String = DEFAULT_ICON,
     /** A one-off reminder that has gone off but has not been marked done yet. */
     val fired: Boolean = false,
 ) {
@@ -35,6 +36,7 @@ data class Reminder(
         .put("time", timeMillis)
         .put("repeat", repeat.name)
         .put("fired", fired)
+        .put("icon", icon)
 
     companion object {
         fun fromJson(o: JSONObject) = Reminder(
@@ -43,7 +45,11 @@ data class Reminder(
             timeMillis = o.getLong("time"),
             repeat = runCatching { Repeat.valueOf(o.getString("repeat")) }.getOrDefault(Repeat.NONE),
             fired = o.optBoolean("fired", false),
+            icon = o.optString("icon", DEFAULT_ICON),
         )
+
+        const val DEFAULT_ICON = "🔔"
+        val ICONS = listOf("🔔", "💊", "💧", "📞", "📅", "🏃", "🍽️", "📚", "⭐")
 
         fun newId(): Long = System.currentTimeMillis()
     }

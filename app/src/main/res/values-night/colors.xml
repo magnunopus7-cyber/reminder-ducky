@@ -1,0 +1,9 @@
+<resources>
+    <color name="sky_top">#1D3A66</color>
+    <color name="sky_bottom">#2B5288</color>
+    <color name="page">#101826</color>
+    <color name="card">#1C2638</color>
+    <color name="ink">#EEF3FB</color>
+    <color name="ink_soft">#A3B0C6</color>
+    <color name="icon_circle">#3A2B3A</color>
+</resources>

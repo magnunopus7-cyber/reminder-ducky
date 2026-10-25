@@ -18,6 +18,7 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.provider.Settings
+import android.text.format.DateFormat
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -49,6 +50,7 @@ class DuckService : Service() {
     private lateinit var duckParams: WindowManager.LayoutParams
     private var trashView: View? = null
     private var bubbleView: View? = null
+    private var menuView: View? = null
     private var snapAnimator: ValueAnimator? = null
 
     private val alertQueue = ArrayDeque<Long>()
@@ -99,8 +101,8 @@ class DuckService : Service() {
         handler.removeCallbacksAndMessages(null)
         snapAnimator?.cancel()
         runCatching { unregisterReceiver(screenReceiver) }
-        listOf(bubbleView, trashView, duckRoot).forEach { v -> v?.let { runCatching { wm.removeView(it) } } }
-        bubbleView = null; trashView = null; duckRoot = null; duckView = null
+        listOf(menuView, bubbleView, trashView, duckRoot).forEach { v -> v?.let { runCatching { wm.removeView(it) } } }
+        menuView = null; bubbleView = null; trashView = null; duckRoot = null; duckView = null
         if (instance === this) instance = null
         super.onDestroy()
     }
@@ -116,7 +118,7 @@ class DuckService : Service() {
         )
         val n: Notification = NotificationCompat.Builder(this, DuckApp.CHANNEL_DUCK)
             .setSmallIcon(R.drawable.ic_stat_duck)
-            .setContentTitle("Your duck is floating")
+            .setContentTitle("Ducky is keeping you company")
             .setContentText("Tap to open your reminders")
             .setContentIntent(open)
             .setOngoing(true)
@@ -137,10 +139,10 @@ class DuckService : Service() {
     private fun addDuck() {
         val size = duckSizePx()
         duckParams = overlayParams(size, size, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
-        val view = DuckGLView(this).apply { renderer.finish = prefs.finish }
+        val view = DuckGLView(this).apply { renderer.look = prefs.look }
         val root = FrameLayout(this).apply {
             addView(view, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
-            contentDescription = "Reminder duck. Tap to open reminders."
+            contentDescription = "Ducky. Tap for quick actions."
         }
         root.setOnTouchListener(DragListener())
         duckView = view
@@ -159,11 +161,12 @@ class DuckService : Service() {
         duckView?.renderer?.facingRight = !prefs.onRight
         if (addTo != null) wm.addView(addTo, duckParams) else duckRoot?.let { wm.updateViewLayout(it, duckParams) }
         positionBubble()
+        positionMenu()
     }
 
     /** Called from the app when the finish or size changes. */
     fun refreshAppearance() {
-        duckView?.renderer?.finish = prefs.finish
+        duckView?.renderer?.look = prefs.look
         if (duckRoot != null && duckParams.width != duckSizePx()) placeFromPrefs()
     }
 
@@ -180,6 +183,7 @@ class DuckService : Service() {
             when (e.actionMasked) {
                 MotionEvent.ACTION_DOWN -> {
                     snapAnimator?.cancel()
+                    hideMenu()
                     downX = e.rawX; downY = e.rawY
                     startX = duckParams.x; startY = duckParams.y
                     dragging = false
@@ -217,9 +221,8 @@ class DuckService : Service() {
 
     private fun onDuckTapped() {
         duckView?.renderer?.squash()
-        handler.postDelayed({
-            startActivity(Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-        }, 180)
+        if (alertQueue.isEmpty()) duckView?.renderer?.react(Mood.HAPPY, 1.6f)
+        showMenu()
     }
 
     private fun snapToEdge() {
@@ -238,6 +241,7 @@ class DuckService : Service() {
                 duckParams.x = it.animatedValue as Int
                 duckRoot?.let { r -> wm.updateViewLayout(r, duckParams) }
                 positionBubble()
+                positionMenu()
             }
             addListener(object : android.animation.AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: android.animation.Animator) {
@@ -289,8 +293,85 @@ class DuckService : Service() {
 
     private fun hideDuckByUser() {
         prefs.showDuck = false
-        Toast.makeText(this, "Duck hidden. Reminders still arrive as notifications. Open Reminder Ducky to bring it back.", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, "Ducky is napping. Reminders still arrive as notifications. Open the Ducky app to bring it back.", Toast.LENGTH_LONG).show()
         stopSelf()
+    }
+
+    // ---- Quick actions menu (tap the duck) ----
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun showMenu() {
+        if (menuView != null) {
+            hideMenu()
+            return
+        }
+        bubbleView?.let { runCatching { wm.removeView(it) } }
+        bubbleView = null
+        val v = LayoutInflater.from(ContextThemeWrapper(this, R.style.Theme_ReminderDucky))
+            .inflate(R.layout.quick_menu, null)
+        val store = ReminderStore(this)
+        val alert = alertQueue.firstOrNull()?.let { store.get(it) }
+        val header = v.findViewById<TextView>(R.id.menuHeader)
+        if (alert != null) {
+            header.text = "${alert.icon}  ${alert.text}"
+        } else {
+            val next = store.all().filter { !it.fired }.minByOrNull { it.timeMillis }
+            header.text = if (next == null) "Nothing coming up. Quack!" else
+                "Next: ${next.icon} ${next.text} · ${DateFormat.getTimeFormat(this).format(next.timeMillis)}"
+        }
+        v.findViewById<View>(R.id.menuDone).apply {
+            visibility = if (alert != null) View.VISIBLE else View.GONE
+            setOnClickListener { alert?.let { ReminderActions.done(this@DuckService, it.id) } }
+        }
+        v.findViewById<View>(R.id.menuSnooze).apply {
+            visibility = if (alert != null) View.VISIBLE else View.GONE
+            setOnClickListener { alert?.let { ReminderActions.snooze(this@DuckService, it.id) } }
+        }
+        v.findViewById<View>(R.id.menuAdd).setOnClickListener { openApp(MainActivity.ACTION_ADD) }
+        v.findViewById<View>(R.id.menuList).setOnClickListener { openApp(null) }
+        v.findViewById<View>(R.id.menuCustomize).setOnClickListener { openApp(MainActivity.ACTION_CUSTOMIZE) }
+        v.findViewById<View>(R.id.menuHide).setOnClickListener {
+            hideMenu()
+            hideDuckByUser()
+        }
+        v.setOnTouchListener { _, e ->
+            if (e.actionMasked == MotionEvent.ACTION_OUTSIDE) hideMenu()
+            false
+        }
+        val p = overlayParams(
+            dp(280), WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
+        )
+        wm.addView(v, p)
+        menuView = v
+        positionMenu()
+    }
+
+    private fun hideMenu() {
+        val v = menuView ?: return
+        runCatching { wm.removeView(v) }
+        menuView = null
+        updateBubble()
+    }
+
+    private fun openApp(action: String?) {
+        hideMenu()
+        startActivity(
+            Intent(this, MainActivity::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                .setAction(action ?: Intent.ACTION_MAIN)
+        )
+    }
+
+    private fun positionMenu() {
+        val v = menuView ?: return
+        val p = v.layoutParams as WindowManager.LayoutParams
+        val screen = screenSize()
+        val duckOnLeft = duckParams.x + duckParams.width / 2 < screen.x / 2
+        p.x = if (duckOnLeft) duckParams.x + duckParams.width else duckParams.x - p.width
+        p.x = p.x.coerceIn(0, maxOf(0, screen.x - p.width))
+        p.y = duckParams.y.coerceIn(0, maxOf(0, screen.y - dp(380)))
+        runCatching { wm.updateViewLayout(v, p) }
     }
 
     // ---- Alerts ----
@@ -298,14 +379,17 @@ class DuckService : Service() {
     fun showAlert(id: Long) {
         if (duckRoot == null) return
         if (!alertQueue.contains(id)) alertQueue.addLast(id)
+        duckView?.renderer?.react(Mood.SURPRISED, 1.2f)
         setWobbling(true)
         handler.removeCallbacks(calmDown)
         handler.postDelayed(calmDown, WOBBLE_MILLIS)
         updateBubble()
     }
 
-    fun dismissAlert(id: Long) {
+    fun dismissAlert(id: Long, mood: Mood) {
         alertQueue.remove(id)
+        duckView?.renderer?.react(mood, 2.5f)
+        hideMenu()
         updateBubble()
     }
 
@@ -319,11 +403,13 @@ class DuckService : Service() {
         // Drop alerts whose reminder was deleted meanwhile.
         while (alertQueue.isNotEmpty() && store.get(alertQueue.first()) == null) alertQueue.removeFirst()
         val id = alertQueue.firstOrNull()
-        if (id == null) {
+        if (id == null || menuView != null) {
             bubbleView?.let { runCatching { wm.removeView(it) } }
             bubbleView = null
-            handler.removeCallbacks(calmDown)
-            setWobbling(false)
+            if (id == null) {
+                handler.removeCallbacks(calmDown)
+                setWobbling(false)
+            }
             return
         }
         val r = store.get(id) ?: return
@@ -334,9 +420,10 @@ class DuckService : Service() {
                 bubbleView = v
             }
         val more = alertQueue.size - 1
-        view.findViewById<TextView>(R.id.bubbleTitle).text =
-            if (more > 0) "Quack! Reminder (+$more more)" else "Quack! Reminder"
+        view.findViewById<TextView>(R.id.bubbleIcon).text = r.icon
         view.findViewById<TextView>(R.id.bubbleText).text = r.text
+        view.findViewById<TextView>(R.id.bubbleTime).text =
+            DateFormat.getTimeFormat(this).format(r.timeMillis) + if (more > 0) "  ·  +$more more" else ""
         view.findViewById<View>(R.id.bubbleDone).setOnClickListener { ReminderActions.done(this, id) }
         view.findViewById<View>(R.id.bubbleSnooze).setOnClickListener {
             ReminderActions.snooze(this, id)

@@ -1,3 +1,11 @@
 <resources>
-    <color name="icon_bg">#1E2A3A</color>
+    <color name="icon_bg">#8EC5FF</color>
+    <color name="sky_top">#6FB1FF</color>
+    <color name="sky_bottom">#BFDFFF</color>
+    <color name="page">#EEF6FF</color>
+    <color name="card">#FFFFFF</color>
+    <color name="ink">#1F2A3D</color>
+    <color name="ink_soft">#66728A</color>
+    <color name="icon_circle">#FFE9EF</color>
+    <color name="duck_yellow">#FFC21A</color>
 </resources>

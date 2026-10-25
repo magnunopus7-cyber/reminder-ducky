@@ -41,7 +41,7 @@ object ReminderActions {
                 Alarms.cancel(context, id)
             }
         }
-        DuckService.instance?.dismissAlert(id)
+        DuckService.instance?.dismissAlert(id, Mood.HAPPY)
     }
 
     fun snooze(context: Context, id: Long) {
@@ -54,12 +54,12 @@ object ReminderActions {
             val snoozed = if (r.repeat == Repeat.NONE) {
                 r.copy(timeMillis = at, fired = false)
             } else {
-                Reminder(Reminder.newId(), r.text, at)
+                Reminder(Reminder.newId(), r.text, at, icon = r.icon)
             }
             store.save(snoozed)
             Alarms.schedule(context, snoozed)
         }
-        DuckService.instance?.dismissAlert(id)
+        DuckService.instance?.dismissAlert(id, Mood.SLEEPY)
     }
 
     private fun showNotification(context: Context, r: Reminder) {
@@ -73,7 +73,7 @@ object ReminderActions {
         )
         val n = NotificationCompat.Builder(context, DuckApp.CHANNEL_REMINDERS)
             .setSmallIcon(R.drawable.ic_stat_duck)
-            .setContentTitle("Quack! Reminder")
+            .setContentTitle("${r.icon} Ducky reminder")
             .setContentText(r.text)
             .setStyle(NotificationCompat.BigTextStyle().bigText(r.text))
             .setPriority(NotificationCompat.PRIORITY_HIGH)

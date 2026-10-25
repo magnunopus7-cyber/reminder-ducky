@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="@color/card"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="6dp"
+        app:strokeWidth="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="10dp"
+            android:paddingBottom="8dp">
+
+            <TextView
+                android:id="@+id/menuHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="18dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="18dp"
+                android:paddingBottom="6dp"
+                android:textColor="@color/ink_soft"
+                android:textSize="13sp" />
+
+            <TextView android:id="@+id/menuDone" style="@style/MenuRow" android:text="✅   Mark as done" />
+            <TextView android:id="@+id/menuSnooze" style="@style/MenuRow" android:text="🕒   Snooze 10 min" />
+            <TextView android:id="@+id/menuAdd" style="@style/MenuRow" android:text="➕   Add a reminder" />
+            <TextView android:id="@+id/menuList" style="@style/MenuRow" android:text="📋   View all reminders" />
+            <TextView android:id="@+id/menuCustomize" style="@style/MenuRow" android:text="🎨   Customize Ducky" />
+            <TextView android:id="@+id/menuHide" style="@style/MenuRow" android:text="👋   Hide Ducky for now" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</FrameLayout>
