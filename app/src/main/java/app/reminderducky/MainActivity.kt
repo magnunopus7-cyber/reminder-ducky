@@ -428,12 +428,7 @@ class MainActivity : AppCompatActivity() {
         val btnDate = view.findViewById<MaterialButton>(R.id.btnDate)
         val timeWheel = view.findViewById<android.widget.TimePicker>(R.id.timeWheel)
         val repeatGroup = view.findViewById<ChipGroup>(R.id.repeatGroup)
-        val iconGroup = view.findViewById<ChipGroup>(R.id.iconGroup)
 
-        val iconChips = Reminder.ICONS.associateWith { e ->
-            filterChip(e).apply { textSize = 18f }.also { iconGroup.addView(it) }
-        }
-        iconGroup.check((iconChips[existing?.icon] ?: iconChips.getValue(Reminder.DEFAULT_ICON)).id)
 
         val cal = Calendar.getInstance().apply {
             if (existing != null) {
@@ -488,7 +483,7 @@ class MainActivity : AppCompatActivity() {
                         return@setOnClickListener
                     }
                     val repeat = repeatChips[repeatGroup.checkedChipId] ?: Repeat.NONE
-                    val icon = iconChips.entries.firstOrNull { it.value.id == iconGroup.checkedChipId }?.key ?: Reminder.DEFAULT_ICON
+                    val icon = existing?.icon ?: Reminder.DEFAULT_ICON
                     val now = System.currentTimeMillis()
                     var time = cal.timeInMillis
                     if (time <= now) {
