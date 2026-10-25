@@ -101,6 +101,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<View>(R.id.btnAdd).setOnClickListener { showEditDialog(null) }
+        findViewById<View>(R.id.btnDone).setOnClickListener { finish() }
         findViewById<View>(R.id.btnTest).setOnClickListener {
             val r = Reminder(Reminder.newId(), getString(R.string.test_text), System.currentTimeMillis() + 60_000L, icon = "🦆")
             store.save(r)

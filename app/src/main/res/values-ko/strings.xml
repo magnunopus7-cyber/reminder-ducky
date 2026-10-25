@@ -100,4 +100,6 @@
     <string name="skin_costume_m">장난꾸러기</string>
     <string name="skin_party">파티</string>
     <string name="skin_party_m">축하</string>
+    <string name="done_page">완료</string>
+    <string name="autosave_note">변경 사항은 자동으로 저장돼요.</string>
 </resources>

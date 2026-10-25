@@ -100,4 +100,6 @@
     <string name="skin_costume_m">Playful</string>
     <string name="skin_party">Party</string>
     <string name="skin_party_m">Celebrating</string>
+    <string name="done_page">Done</string>
+    <string name="autosave_note">Changes are saved automatically.</string>
 </resources>

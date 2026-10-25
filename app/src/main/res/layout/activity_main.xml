@@ -288,6 +288,18 @@
                         android:textColor="@color/ink" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDone"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/done_page" />
+
+            <TextView
+                style="@style/SectionSub"
+                android:gravity="center"
+                android:text="@string/autosave_note" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>
