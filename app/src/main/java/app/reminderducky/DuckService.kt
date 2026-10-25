@@ -459,6 +459,7 @@ class DuckService : Service() {
         // Drop alerts whose reminder was deleted meanwhile.
         while (alertQueue.isNotEmpty() && store.get(alertQueue.first()) == null) alertQueue.removeFirst()
         val id = alertQueue.firstOrNull()
+        duckView?.renderer?.waiting = id != null
         if (id == null || menuView != null) {
             bubbleView?.let { runCatching { wm.removeView(it) } }
             bubbleView = null

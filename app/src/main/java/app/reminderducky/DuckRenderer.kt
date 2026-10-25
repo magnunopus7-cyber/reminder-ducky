@@ -36,6 +36,8 @@ class DuckRenderer(context: Context) : GLSurfaceView.Renderer {
     @Volatile var sleepsAtNight = true
     /** Doze off when nobody has tapped Ducky for a while (off for the in-app preview). */
     @Volatile var sleepsWhenIdle = true
+    /** A reminder bubble is waiting for an answer: stay awake. */
+    @Volatile var waiting = false
 
     @Volatile private var squashStartNanos = 0L
     /** Last tap, drag or reminder; Ducky dozes off after a quiet while. */
@@ -100,7 +102,7 @@ class DuckRenderer(context: Context) : GLSurfaceView.Renderer {
     private fun currentMood(now: Long, t: Float): Mood {
         if (now < reactionEndNanos) return reaction
         if (alerting) return Mood.EXCITED
-        if (sleepsWhenIdle && now - lastPokeNanos > IDLE_SLEEP_NANOS) return Mood.SLEEPY
+        if (sleepsWhenIdle && !waiting && now - lastPokeNanos > IDLE_SLEEP_NANOS) return Mood.SLEEPY
         if (t - nightCheckedAt > 30f) {
             nightCheckedAt = t
             val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
