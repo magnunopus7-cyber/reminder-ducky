@@ -104,7 +104,7 @@
     <string name="done_page">Done</string>
     <string name="autosave_note">Changes are saved automatically.</string>
     <string name="todo_title">To-do list</string>
-    <string name="todo_hint">Something to do</string>
+    <string name="todo_hint">To do</string>
     <string name="todo_empty">Nothing to do. Quack.</string>
     <string name="todo_clear">Clear ticked items</string>
     <string name="menu_alarm">Set an alarm</string>
