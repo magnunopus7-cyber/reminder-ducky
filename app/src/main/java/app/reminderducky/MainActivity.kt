@@ -110,6 +110,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         buildCustomizer()
+        setUpTodos()
         handleAction(intent)
     }
 
@@ -121,11 +122,83 @@ class MainActivity : AppCompatActivity() {
     private fun handleAction(intent: Intent?) {
         when (intent?.action) {
             ACTION_ADD -> findViewById<View>(R.id.btnAdd).post { showEditDialog(null) }
-            ACTION_CUSTOMIZE -> findViewById<ScrollView>(R.id.scroll).let { sv ->
-                sv.post { sv.smoothScrollTo(0, findViewById<View>(R.id.customizeCard).top) }
+            ACTION_CUSTOMIZE -> scrollTo(R.id.customizeCard)
+            ACTION_TODO -> {
+                scrollTo(R.id.todoCard)
+                findViewById<View>(R.id.todoInput).let { input ->
+                    input.post {
+                        input.requestFocus()
+                        getSystemService(android.view.inputmethod.InputMethodManager::class.java)
+                            .showSoftInput(input, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT)
+                    }
+                }
             }
         }
         intent?.action = null
+    }
+
+    private fun scrollTo(id: Int) {
+        val sv = findViewById<ScrollView>(R.id.scroll)
+        val target = findViewById<View>(id)
+        sv.post {
+            val r = android.graphics.Rect()
+            target.getDrawingRect(r)
+            sv.offsetDescendantRectToMyCoords(target, r)
+            sv.smoothScrollTo(0, r.top - (16 * resources.displayMetrics.density).roundToInt())
+        }
+    }
+
+    // ---- To-do list ----
+
+    private lateinit var todos: TodoStore
+
+    private fun setUpTodos() {
+        todos = TodoStore(this)
+        val input = findViewById<TextInputEditText>(R.id.todoInput)
+        fun add() {
+            val text = input.text?.toString()?.trim().orEmpty()
+            if (text.isEmpty()) return
+            todos.save(Todo(System.currentTimeMillis(), text))
+            input.setText("")
+            preview.renderer.react(Mood.HAPPY, 1.2f)
+            renderTodos()
+        }
+        findViewById<View>(R.id.todoAdd).setOnClickListener { add() }
+        input.setOnEditorActionListener { _, _, _ -> add(); true }
+        findViewById<View>(R.id.todoClear).setOnClickListener {
+            todos.clearDone()
+            renderTodos()
+        }
+        renderTodos()
+    }
+
+    private fun renderTodos() {
+        val container = findViewById<LinearLayout>(R.id.todoList)
+        container.removeAllViews()
+        val list = todos.all().sortedBy { it.done }
+        findViewById<View>(R.id.todoEmpty).visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
+        findViewById<View>(R.id.todoClear).visibility = if (list.any { it.done }) View.VISIBLE else View.GONE
+        for (t in list) {
+            val row = LayoutInflater.from(this).inflate(R.layout.item_todo, container, false)
+            val check = row.findViewById<com.google.android.material.checkbox.MaterialCheckBox>(R.id.todoCheck)
+            check.text = t.text
+            check.isChecked = t.done
+            check.paintFlags = if (t.done) check.paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
+            else check.paintFlags and android.graphics.Paint.STRIKE_THRU_TEXT_FLAG.inv()
+            check.setOnCheckedChangeListener { _, checked ->
+                todos.save(t.copy(done = checked))
+                if (checked) {
+                    preview.renderer.react(Mood.HAPPY, 1.5f)
+                    if (prefs.tapQuack) Quack.play(this, 0.5f)
+                }
+                container.post { renderTodos() }
+            }
+            row.findViewById<View>(R.id.todoDelete).setOnClickListener {
+                todos.delete(t.id)
+                renderTodos()
+            }
+            container.addView(row)
+        }
     }
 
     override fun onResume() {
@@ -455,5 +528,6 @@ class MainActivity : AppCompatActivity() {
     companion object {
         const val ACTION_ADD = "app.reminderducky.ADD"
         const val ACTION_CUSTOMIZE = "app.reminderducky.CUSTOMIZE"
+        const val ACTION_TODO = "app.reminderducky.TODO"
     }
 }

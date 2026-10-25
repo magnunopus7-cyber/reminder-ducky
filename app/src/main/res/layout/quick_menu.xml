@@ -20,8 +20,9 @@
             android:padding="6dp">
 
             <TextView android:id="@+id/menuDone" style="@style/MenuIcon" android:contentDescription="@string/menu_done" android:text="✅" />
-            <TextView android:id="@+id/menuSnooze" style="@style/MenuIcon" android:contentDescription="@string/menu_snooze" android:text="⏰" />
-            <TextView android:id="@+id/menuAdd" style="@style/MenuIcon" android:contentDescription="@string/menu_add" android:text="➕" />
+            <TextView android:id="@+id/menuSnooze" style="@style/MenuIcon" android:contentDescription="@string/menu_snooze" android:text="😴" />
+            <TextView android:id="@+id/menuAdd" style="@style/MenuIcon" android:contentDescription="@string/menu_alarm" android:text="⏰" />
+            <TextView android:id="@+id/menuTodo" style="@style/MenuIcon" android:contentDescription="@string/menu_todo" android:text="📝" />
             <TextView android:id="@+id/menuSettings" style="@style/MenuIcon" android:contentDescription="@string/menu_settings" android:text="⚙️" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>

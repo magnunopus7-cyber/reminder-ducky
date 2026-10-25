@@ -103,4 +103,10 @@
     <string name="skin_party_m">축하</string>
     <string name="done_page">완료</string>
     <string name="autosave_note">변경 사항은 자동으로 저장돼요.</string>
+    <string name="todo_title">할 일 목록</string>
+    <string name="todo_hint">할 일</string>
+    <string name="todo_empty">할 일이 없어요. 꽥.</string>
+    <string name="todo_clear">완료한 항목 지우기</string>
+    <string name="menu_alarm">알람 맞추기</string>
+    <string name="menu_todo">할 일 목록</string>
 </resources>
