@@ -1,0 +1,10 @@
+<resources>
+    <style name="Theme.ReminderDucky" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">#B07800</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorPrimaryContainer">#FFDFA0</item>
+        <item name="colorOnPrimaryContainer">#2A1800</item>
+        <item name="colorSecondaryContainer">#FBE3B5</item>
+        <item name="colorOnSecondaryContainer">#2A1800</item>
+    </style>
+</resources>

@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <FrameLayout
+            android:id="@+id/previewHolder"
+            android:layout_width="match_parent"
+            android:layout_height="150dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/app_name"
+            android:textAppearance="?attr/textAppearanceHeadlineMedium" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:gravity="center"
+            android:text="Your shiny duck floats over your apps and quacks when something is due."
+            android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/setupCard"
+            style="?attr/materialCardViewFilledStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            app:cardBackgroundColor="?attr/colorPrimaryContainer">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Finish setting up"
+                    android:textAppearance="?attr/textAppearanceTitleMedium" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="Tap each button. Android will open a settings page: switch it on, then come back here."
+                    android:textAppearance="?attr/textAppearanceBodySmall" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnOverlay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="1. Let the duck float over other apps" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnNotif"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="2. Allow notifications" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnExact"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="3. Allow reminders at the exact time" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnBattery"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Stop battery saver from putting the duck to sleep" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            style="?attr/materialCardViewOutlinedStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/switchDuck"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Show the floating duck" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Metal finish"
+                    android:textAppearance="?attr/textAppearanceLabelLarge" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/finishGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:selectionRequired="true"
+                    app:singleSelection="true">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/finishGold"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Gold" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/finishChrome"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Chrome" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/finishRose"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Rose gold" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/finishMidnight"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Midnight" />
+                </com.google.android.material.chip.ChipGroup>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Size"
+                    android:textAppearance="?attr/textAppearanceLabelLarge" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/sizeGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:selectionRequired="true"
+                    app:singleSelection="true">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/sizeSmall"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Small" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/sizeMedium"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Medium" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/sizeLarge"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Large" />
+                </com.google.android.material.chip.ChipGroup>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Reminders"
+                android:textAppearance="?attr/textAppearanceTitleLarge" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAdd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+ Add" />
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnTest"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Try it: remind me in 1 minute" />
+
+        <TextView
+            android:id="@+id/emptyText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="24dp"
+            android:text="No reminders yet. Tap + Add, or tap the floating duck any time."
+            android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+        <LinearLayout
+            android:id="@+id/listContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </LinearLayout>
+</ScrollView>
