@@ -31,8 +31,7 @@ enum PreviewMode {
         ]
         let banner = LockScreenDuck(state: .now())
             .frame(width: 364, height: 120)
-            .background(Color(red: 0.43, green: 0.69, blue: 1).opacity(0.55))
-            .background(Color.black)
+            .background(Color(red: 0.56, green: 0.77, blue: 1))
             .clipShape(RoundedRectangle(cornerRadius: 22))
         let bannerRenderer = ImageRenderer(content: banner)
         bannerRenderer.scale = 3

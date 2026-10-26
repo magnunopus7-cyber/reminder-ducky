@@ -6,7 +6,7 @@ struct DuckLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: DuckActivityAttributes.self) { context in
             LockScreenDuck(state: context.state)
-                .activityBackgroundTint(Color(red: 0.43, green: 0.69, blue: 1).opacity(0.55))
+                .activityBackgroundTint(Color(red: 0.56, green: 0.77, blue: 1))
                 .activitySystemActionForegroundColor(DuckTheme.ink)
         } dynamicIsland: { context in
             let state = context.state

@@ -30,7 +30,8 @@ struct LockScreenDuck: View {
     var body: some View {
         HStack(spacing: 10) {
             DuckImageView(mood: DuckMood(rawValue: state.mood) ?? .normal)
-                .frame(width: 96, height: 96)
+                .frame(width: 104, height: 104)
+                .padding(.vertical, -10)
             VStack(alignment: .leading, spacing: 3) {
                 Text(L("app_title")).font(.caption.weight(.bold)).foregroundStyle(DuckTheme.ink.opacity(0.7))
                 Text("\(state.icon) \(state.text)")
