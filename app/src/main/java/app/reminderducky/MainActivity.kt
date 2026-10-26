@@ -392,29 +392,38 @@ class MainActivity : AppCompatActivity() {
         val plus = ImageView(this)
         holder.addView(plus, FrameLayout.LayoutParams(dp(40), dp(40), Gravity.CENTER))
         row.addView(holder, ViewGroup.MarginLayoutParams(dp(44), dp(44)).apply { topMargin = dp(4); marginStart = dp(2) })
-        var step = 0
-        var cardHeight = 0
+        val few = 3
+        val nameWidths = cards.map { ((it.getChildAt(0) as ViewGroup).getChildAt(1)).layoutParams.width }
         fun apply() {
-            val first = cards.firstOrNull() ?: return
-            if (step == 0 && first.width > 0) {
-                val lp = first.layoutParams as ViewGroup.MarginLayoutParams
-                step = cards.maxOf { it.width } + lp.marginStart + lp.marginEnd + dp(8)
-                cardHeight = first.height
-            }
-            if (row.width == 0 || step == 0) return
-            val fit = ((row.width - row.paddingStart - row.paddingEnd - dp(52)) / step).coerceAtLeast(1)
-            holder.visibility = if (cards.size > fit || open) View.VISIBLE else View.GONE
-            (holder.layoutParams as ViewGroup.MarginLayoutParams).height = cardHeight
+            if (row.width == 0) return
+            val folded = !open && cards.size > few
+            holder.visibility = if (cards.size > few) View.VISIBLE else View.GONE
             plus.setImageResource(if (open) R.drawable.ic_more_minus else R.drawable.ic_more_plus)
             plus.contentDescription = getString(if (open) R.string.fewer_options else R.string.more_options)
+            // Folded: the first three cards share the line evenly, the + takes the rest.
+            val gap = (row as? ChipGroup)?.chipSpacingHorizontal ?: dp(8)
+            val avail = row.width - row.paddingStart - row.paddingEnd - dp(44) - dp(2)
+            val w = avail / few - dp(2) - dp(8) - gap
             val pick = chosen()
             val pickAt = cards.indexOf(pick)
             for ((i, card) in cards.withIndex()) {
-                val shown = open || cards.size <= fit ||
-                    (if (pickAt >= fit) (i < fit - 1 || card == pick) else i < fit)
+                val shown = !folded || (if (pickAt >= few) (i < few - 1 || card == pick) else i < few)
                 card.visibility = if (shown) View.VISIBLE else View.GONE
+                card.layoutParams.width = if (folded) w else ViewGroup.LayoutParams.WRAP_CONTENT
+                val col = card.getChildAt(0) as ViewGroup
+                val box = col.getChildAt(0)
+                val name = col.getChildAt(1)
+                name.layoutParams.width = if (folded) ViewGroup.LayoutParams.MATCH_PARENT else nameWidths[i]
+                val boxSize = if (folded) minOf(dp(72), w - dp(12)) else dp(72)
+                box.layoutParams.width = boxSize
+                box.layoutParams.height = boxSize
+                (box as ViewGroup).getChildAt(0).layoutParams.let { it.width = minOf(dp(64), boxSize); it.height = minOf(dp(64), boxSize) }
+                card.requestLayout()
             }
-            holder.requestLayout()
+            row.post {
+                val h = cards.firstOrNull { it.visibility == View.VISIBLE }?.height ?: 0
+                if (h > 0 && holder.layoutParams.height != h) { holder.layoutParams.height = h; holder.requestLayout() }
+            }
         }
         holder.setOnClickListener { open = !open; apply() }
         plus.setOnClickListener { open = !open; apply() }
