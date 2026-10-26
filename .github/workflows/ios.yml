@@ -56,6 +56,20 @@ jobs:
           name: Ducky-unsigned-ipa
           path: ios/build/Ducky-unsigned.ipa
 
+      # A plain download link for sideloading with AltStore (free Apple ID).
+      - name: Publish the iPhone file as a download
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ios-build-${{ github.run_number }}
+          name: Ducky for iPhone 1.0.${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
+          prerelease: true
+          make_latest: false
+          files: ios/build/Ducky-unsigned.ipa
+          body: |
+            Download **Ducky-unsigned.ipa** and install it with AltStore (see ios/README.md).
+            Built from commit ${{ github.sha }}.
+
       - name: Run in the iPhone simulator and take pictures
         run: |
           xcodebuild -project Ducky.xcodeproj -scheme Ducky -configuration Debug \
