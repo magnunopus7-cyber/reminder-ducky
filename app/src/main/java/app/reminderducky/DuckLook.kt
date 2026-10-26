@@ -32,7 +32,13 @@ enum class DuckAccessory(@StringRes val label: Int, @DrawableRes val thumb: Int,
     NONE(R.string.acc_none, R.drawable.thumb_acc_none, 0f, 0xFFFFFF, 0xFFFFFF),
     FLOWER(R.string.acc_flower, R.drawable.thumb_acc_flower, 1f, 0xFFEBF2, 0xFFD24D),
     BEANIE(R.string.acc_beanie, R.drawable.thumb_acc_beanie, 2f, 0x4D80E6, 0x99C2FF),
-    PARTY(R.string.acc_party, R.drawable.thumb_acc_party, 3f, 0xFF73A6, 0x73CCFF);
+    PARTY(R.string.acc_party, R.drawable.thumb_acc_party, 3f, 0xFF73A6, 0x73CCFF),
+    NIGHTCAP(R.string.acc_nightcap, R.drawable.thumb_acc_nightcap, 4f, 0x6FA8F0, 0xFFFFFF),
+    SPROUT(R.string.acc_sprout, R.drawable.thumb_acc_sprout, 5f, 0x6CC24A, 0x4E9F3A),
+    SHADES(R.string.acc_shades, R.drawable.thumb_acc_shades, 6f, 0xFF8FB0, 0x2B2530),
+    HEADPHONES(R.string.acc_headphones, R.drawable.thumb_acc_headphones, 7f, 0x4A90E2, 0xF2F6FF),
+    CAPE(R.string.acc_cape, R.drawable.thumb_acc_cape, 8f, 0xF0483E, 0xE23B32),
+    CAP(R.string.acc_cap, R.drawable.thumb_acc_cap, 9f, 0x4A90E2, 0xFFD45A);
 
     val aRgb get() = rgb(a)
     val bRgb get() = rgb(b)
@@ -61,6 +67,12 @@ enum class DuckSkin(@StringRes val label: Int, @DrawableRes val thumb: Int, val 
     FLUFFY(R.string.skin_fluffy, R.drawable.thumb_skin_fluffy, DuckLook(DuckMaterial.FLUFFY, DuckColor.SUNNY)),
     COSTUME(R.string.skin_costume, R.drawable.thumb_skin_costume, DuckLook(DuckMaterial.GLOSSY, DuckColor.SAILOR, DuckAccessory.BEANIE)),
     PARTY(R.string.skin_party, R.drawable.thumb_skin_party, DuckLook(DuckMaterial.GLOSSY, DuckColor.SUNNY, DuckAccessory.PARTY)),
+    NIGHTCAP(R.string.acc_nightcap, R.drawable.thumb_acc_nightcap, DuckLook(accessory = DuckAccessory.NIGHTCAP)),
+    SPROUT(R.string.acc_sprout, R.drawable.thumb_acc_sprout, DuckLook(accessory = DuckAccessory.SPROUT)),
+    SHADES(R.string.acc_shades, R.drawable.thumb_acc_shades, DuckLook(accessory = DuckAccessory.SHADES)),
+    HEADPHONES(R.string.acc_headphones, R.drawable.thumb_acc_headphones, DuckLook(accessory = DuckAccessory.HEADPHONES)),
+    HERO(R.string.st_hero, R.drawable.thumb_acc_cape, DuckLook(accessory = DuckAccessory.CAPE)),
+    CAP(R.string.acc_cap, R.drawable.thumb_acc_cap, DuckLook(accessory = DuckAccessory.CAP)),
 }
 
 /** Picture ducks: a flat image that floats, hops and dozes like the 3D duck. */

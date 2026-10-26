@@ -122,4 +122,10 @@
     <string name="skins_3d">3D 덕희</string>
     <string name="skins_sticker">그림 덕희</string>
     <string name="collapse_toggle">펼치기 또는 접기</string>
+    <string name="acc_nightcap">수면모자</string>
+    <string name="acc_sprout">새싹</string>
+    <string name="acc_shades">하트 선글라스</string>
+    <string name="acc_headphones">헤드폰</string>
+    <string name="acc_cape">망토</string>
+    <string name="acc_cap">모자</string>
 </resources>

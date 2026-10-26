@@ -14,7 +14,8 @@ uniform float uMat;      // 0 glossy, 1 metallic, 2 crystal, 3 fluffy
 uniform vec3 uBody;      // body colour
 uniform vec3 uHead;      // head colour (differs for two-tone skins)
 uniform vec3 uBeak;
-uniform float uAcc;      // 0 none, 1 flower, 2 beanie, 3 party hat
+uniform float uAcc;      // 0 none, 1 flower, 2 beanie, 3 party hat, 4 nightcap, 5 sprout,
+                         // 6 heart shades, 7 headphones, 8 cape, 9 cap
 uniform vec3 uAccA;
 uniform vec3 uAccB;
 uniform float uEyeMode;  // 0 open, 1 happy ^ ^, 2 sleepy u u
@@ -58,6 +59,34 @@ float sdCone(vec3 p, vec2 c, float h) {
     return sqrt(d) * sign(s);
 }
 
+// A tube from a to b whose radius goes from r1 to r2.
+float sdTaper(vec3 p, vec3 a, vec3 b, float r1, float r2) {
+    vec3 pa = p - a, ba = b - a;
+    float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
+    return length(pa - ba * h) - mix(r1, r2, h);
+}
+
+float sdHeart2(vec2 p) {
+    p.x = abs(p.x);
+    if (p.y + p.x > 1.0) return length(p - vec2(0.25, 0.75)) - 0.35355;
+    vec2 a = p - vec2(0.0, 1.0);
+    vec2 b = p - 0.5 * max(p.x + p.y, 0.0);
+    return sqrt(min(dot(a, a), dot(b, b))) * sign(p.x - p.y);
+}
+
+float sdStar5(vec2 p, float r, float rf) {
+    const vec2 k1 = vec2(0.809016994375, -0.587785252292);
+    const vec2 k2 = vec2(-0.809016994375, -0.587785252292);
+    p.x = abs(p.x);
+    p -= 2.0 * max(dot(k1, p), 0.0) * k1;
+    p -= 2.0 * max(dot(k2, p), 0.0) * k2;
+    p.x = abs(p.x);
+    p.y -= r;
+    vec2 ba = rf * vec2(-k1.y, k1.x) - vec2(0.0, 1.0);
+    float h = clamp(dot(p, ba) / dot(ba, ba), 0.0, r);
+    return length(p - ba * h) * sign(p.y * ba.x - p.x * ba.y);
+}
+
 // A curved closed-eye stroke. up = +1 draws ^, up = -1 draws u.
 float sdEyeArc(vec3 e, float up) {
     vec2 q = vec2(dot(e, EYE_S), dot(e, EYE_U) * up);
@@ -90,7 +119,8 @@ vec2 map(vec3 pw) {
 
     vec3 t = p - vec3(-0.46, -0.06, 0.0);
     t = vec3(0.8253 * t.x - 0.5646 * t.y, 0.5646 * t.x + 0.8253 * t.y, t.z);
-    d = smin(d, sdEllipsoid(t, vec3(0.18, 0.08, 0.15)), 0.12);
+    // The superhero cape covers the tail, so leave it out.
+    if (abs(uAcc - 8.0) > 0.5) d = smin(d, sdEllipsoid(t, vec3(0.18, 0.08, 0.15)), 0.12);
 
     d = smin(d, length(p - HEAD_C) - HEAD_R, 0.10);
 
@@ -131,13 +161,100 @@ vec2 map(vec3 pw) {
                 float acc = min(brim, pom);
                 if (acc < res.x) res = vec2(acc, 4.0);
             }
-        } else {
+        } else if (uAcc < 3.5) {
             vec3 q = h - vec3(-0.02, 0.68, 0.0);
             if (length(q - vec3(0.0, -0.2, 0.0)) < 0.32) {
                 float cone = sdCone(q, vec2(0.38, 0.925), 0.40);
                 if (cone < res.x) res = vec2(cone, 3.0);
                 float pom = length(q - vec3(0.0, 0.02, 0.0)) - 0.045;
                 if (pom < res.x) res = vec2(pom, 4.0);
+            }
+        } else if (uAcc < 4.5) {
+            // Nightcap: a soft starry cap whose tip flops down the back.
+            if (length(h - vec3(-0.2, 0.25, 0.0)) < 0.62) {
+                float cap = max(length(h) - 0.385, 0.06 - h.y);
+                cap = smin(cap, sdTaper(h, vec3(-0.02, 0.30, 0.0), vec3(-0.30, 0.40, 0.04), 0.20, 0.10), 0.06);
+                cap = smin(cap, sdTaper(h, vec3(-0.30, 0.40, 0.04), vec3(-0.50, 0.22, 0.10), 0.10, 0.045), 0.04);
+                float band = sdTorus(h - vec3(0.0, 0.07, 0.0), 0.35, 0.05);
+                cap = min(cap, band);
+                if (cap < res.x) res = vec2(cap, 3.0);
+                float pom = length(h - vec3(-0.52, 0.17, 0.11)) - 0.065;
+                if (pom < res.x) res = vec2(pom, 4.0);
+            }
+        } else if (uAcc < 5.5) {
+            // Sprout: a little stem with two leaves.
+            vec3 q = h - vec3(-0.02, 0.34, 0.0);
+            if (length(q - vec3(0.0, 0.16, 0.0)) < 0.3) {
+                float stem = sdTaper(q, vec3(0.0), vec3(0.0, 0.17, 0.0), 0.034, 0.024);
+                if (stem < res.x) res = vec2(stem, 4.0);
+                vec3 l = q - vec3(0.0, 0.18, 0.0);
+                l.z = abs(l.z);
+                l -= vec3(0.0, 0.045, 0.105);
+                l = vec3(l.x, 0.8776 * l.y - 0.4794 * l.z, 0.4794 * l.y + 0.8776 * l.z);
+                float leaf = sdEllipsoid(l, vec3(0.075, 0.026, 0.12));
+                if (leaf < res.x) res = vec2(leaf, 3.0);
+            }
+        } else if (uAcc < 6.5) {
+            // Heart-shaped sunglasses in front of the eyes.
+            vec3 g = vec3(p.x, p.y, abs(p.z));
+            if (length(g - vec3(0.35, 0.38, 0.2)) < 0.32) {
+                vec3 e2 = g - (EYE_C + EYE_F * 0.075 - EYE_U * 0.01);
+                vec2 uv = vec2(dot(e2, EYE_S), dot(e2, EYE_U));
+                float w = dot(e2, EYE_F);
+                float hd = sdHeart2(uv / 0.19 + vec2(0.0, 0.55)) * 0.19;
+                float lens = max(hd, abs(w) - 0.012);
+                if (lens < res.x) res = vec2(lens, 4.0);
+                float rim = max(abs(hd) - 0.022, abs(w) - 0.028);
+                vec3 outer = EYE_C + EYE_F * 0.075 - EYE_S * 0.17;
+                rim = min(rim, sdTaper(g, outer, vec3(-0.02, 0.40, 0.38), 0.02, 0.016));
+                rim = min(rim, sdTaper(g, vec3(0.56, 0.42, 0.10), vec3(0.56, 0.42, 0.0), 0.02, 0.02));
+                if (rim < res.x) res = vec2(rim, 3.0);
+            }
+        } else if (uAcc < 7.5) {
+            // Headphones: a band over the head and a cup on each side.
+            vec3 q = h - vec3(-0.03, 0.0, 0.0);
+            vec3 qa = vec3(q.x, q.y, abs(q.z));
+            if (length(q) < 0.56) {
+                float band = max(length(vec2(length(q.yz) - 0.41, q.x)) - 0.032, -q.y);
+                if (band < res.x) res = vec2(band, 4.0);
+                vec3 c = qa - vec3(0.0, 0.02, 0.40);
+                float cup = sdEllipsoid(c, vec3(0.12, 0.13, 0.07));
+                cup = min(cup, sdTaper(qa, vec3(0.0, 0.0, 0.41), vec3(0.0, 0.12, 0.41), 0.03, 0.03));
+                if (cup < res.x) res = vec2(cup, 3.0);
+                float pad = sdEllipsoid(c + vec3(0.0, 0.0, 0.05), vec3(0.10, 0.11, 0.04));
+                if (pad < res.x) res = vec2(pad, 4.0);
+            }
+        } else if (uAcc < 8.5) {
+            // Superhero: a scarf with a knot and a cape down the back.
+            if (length(p - vec3(-0.05, -0.12, 0.0)) < 0.95) {
+                // The cape drapes from the neck over a slightly bigger body shape.
+                float hull = sdEllipsoid(p - vec3(-0.02, -0.25, 0.0), vec3(0.70, 0.40, 0.57));
+                hull = smin(hull, sdTaper(p, vec3(0.08, -0.10, 0.0), vec3(0.10, 0.16, 0.0), 0.30, 0.25), 0.35);
+                // Solid between the body and the hull, so there are no gaps to see through.
+                float cape = max(hull, 0.01 - sdEllipsoid(p - vec3(0.0, -0.22, 0.0), vec3(0.55, 0.36, 0.46)));
+                float back = p.x + 0.04 - 0.2 * (1.0 - smoothstep(-0.4, 0.1, p.y));
+                cape = max(cape, max(back, max(p.y - 0.18, -0.46 - p.y)));
+                if (cape < res.x) res = vec2(cape, 3.0);
+                vec3 n = p - vec3(0.13, 0.06, 0.0);
+                n = vec3(0.9553 * n.x + 0.2955 * n.y, -0.2955 * n.x + 0.9553 * n.y, n.z);
+                float scarf = sdEllipsoid(vec3(length(n.xz) - 0.33, n.y, 0.0), vec3(0.08, 0.065, 1.0));
+                vec3 k = p - vec3(0.47, 0.02, 0.0);
+                float knot = length(k) - 0.055;
+                vec3 kz = vec3(k.x, k.y, abs(k.z) - 0.07);
+                knot = min(knot, sdEllipsoid(kz, vec3(0.04, 0.05, 0.065)));
+                scarf = min(scarf, knot);
+                if (scarf < res.x) res = vec2(scarf, 4.0);
+            }
+        } else {
+            // Cap: a round dome with a short visor and a button on top.
+            if (length(h - vec3(0.0, 0.25, 0.0)) < 0.5) {
+                float cap = max(length(h * vec3(1.0, 0.92, 1.0)) - 0.39, 0.15 - h.y);
+                vec3 b = h - vec3(0.0, 0.16, 0.0);
+                float brim = length(vec2(length(b.xz) - 0.35, b.y * 1.3)) - 0.06;
+                cap = smin(cap, brim, 0.03);
+                if (cap < res.x) res = vec2(cap, 3.0);
+                float button = length(h - vec3(0.0, 0.425, 0.0)) - 0.04;
+                if (button < res.x) res = vec2(button, 4.0);
             }
         }
     }
@@ -192,12 +309,21 @@ vec4 shade(vec3 pos, vec3 n, vec3 rd, float id) {
         type = 0.0;
     } else {
         base = id < 3.5 ? uAccA : uAccB;
-        if (uAcc > 2.5 && id < 3.5) {
+        if (uAcc > 2.5 && uAcc < 3.5 && id < 3.5) {
             // Party hat stripes.
             base = mix(uAccA, uAccB, step(0.5, fract(op.y * 9.0)));
         }
+        if (uAcc > 3.5 && uAcc < 4.5 && id < 3.5) {
+            // White stars on the nightcap.
+            vec3 hh = op - HEAD_C;
+            vec2 g = vec2(atan(hh.z, hh.x) * 1.6, hh.y * 7.0 + hh.x * 3.0);
+            vec2 c = fract(g) - 0.5;
+            float star = sdStar5(c, 0.30, 0.45);
+            base = mix(uAccA, uAccB, 1.0 - smoothstep(-0.03, 0.03, star));
+        }
         if (type > 1.5) type = 0.0;
         if (uAcc > 1.5 && type > 0.5) type = 0.0;
+        if (abs(uAcc - 8.0) < 0.5) type = 3.0; // the cape and scarf are soft fabric
     }
 
     // Rosy cheeks on everything but metal and crystal.
