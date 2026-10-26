@@ -364,6 +364,52 @@ class MainActivity : AppCompatActivity() {
         scroll.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> update() }
     }
 
+    /**
+     * Shows only one line of a wrapping row of cards, keeping the chosen one in view,
+     * with a round + at the right end that opens the rest (and a − to close them again).
+     */
+    private fun showFew(row: ViewGroup, cards: List<MaterialCardView>, chosen: () -> MaterialCardView?) {
+        var open = false
+        val holder = FrameLayout(this)
+        val plus = TextView(this).apply {
+            textSize = 20f
+            gravity = Gravity.CENTER
+            setTextColor(Color.WHITE)
+            setBackgroundResource(R.drawable.more_hint)
+            elevation = dp(3).toFloat()
+        }
+        holder.addView(plus, FrameLayout.LayoutParams(dp(36), dp(36), Gravity.CENTER))
+        row.addView(holder, ViewGroup.MarginLayoutParams(dp(40), dp(40)).apply { topMargin = dp(4); marginStart = dp(2) })
+        var step = 0
+        var cardHeight = 0
+        fun apply() {
+            val first = cards.firstOrNull() ?: return
+            if (step == 0 && first.width > 0) {
+                val lp = first.layoutParams as ViewGroup.MarginLayoutParams
+                step = first.width + lp.marginStart + lp.marginEnd + dp(8)
+                cardHeight = first.height
+            }
+            if (row.width == 0 || step == 0) return
+            val fit = ((row.width - row.paddingStart - row.paddingEnd - dp(52)) / step).coerceAtLeast(1)
+            holder.visibility = if (cards.size > fit || open) View.VISIBLE else View.GONE
+            (holder.layoutParams as ViewGroup.MarginLayoutParams).height = cardHeight
+            plus.text = if (open) "−" else "+"
+            plus.contentDescription = getString(if (open) R.string.fewer_options else R.string.more_options)
+            val pick = chosen()
+            val pickAt = cards.indexOf(pick)
+            for ((i, card) in cards.withIndex()) {
+                val shown = open || cards.size <= fit ||
+                    (if (pickAt >= fit) (i < fit - 1 || card == pick) else i < fit)
+                card.visibility = if (shown) View.VISIBLE else View.GONE
+            }
+            holder.requestLayout()
+        }
+        holder.setOnClickListener { open = !open; apply() }
+        plus.setOnClickListener { open = !open; apply() }
+        row.addOnLayoutChangeListener { _, l, _, r, _, ol, _, or_, _ -> if (r - l != or_ - ol) row.post { apply() } }
+        row.post { apply() }
+    }
+
     private fun buildCustomizer() {
         setUpFolds()
         addMoreHint(findViewById(R.id.materialRow))
@@ -380,6 +426,8 @@ class MainActivity : AppCompatActivity() {
         for (a in DuckAccessory.entries) {
             accessoryCards[a] = optionCard(accessoryRow, a.thumb, a.label) { applyLook(prefs.look.copy(accessory = a)) }
         }
+        showFew(colorRow, DuckColor.entries.map { colorCards.getValue(it) }) { colorCards[prefs.look.color] }
+        showFew(accessoryRow, DuckAccessory.entries.map { accessoryCards.getValue(it) }) { accessoryCards[prefs.look.accessory] }
         // Sizes: the same duck drawn bigger and bigger.
         val sizeRow = findViewById<LinearLayout>(R.id.sizeRow)
         val sizes = DuckSize.entries

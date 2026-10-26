@@ -129,6 +129,7 @@
     <string name="acc_cape">Cape</string>
     <string name="acc_cap">Cap</string>
     <string name="acc_party_blue">Blue party hat</string>
+    <string name="fewer_options">Fewer options</string>
     <string name="more_options">More options</string>
     <!-- Ducky talks like a friend in the tap bubble. -->
     <string-array name="talk_one">
