@@ -27,11 +27,6 @@ class Prefs(context: Context) {
             .putString("accessory", v.accessory.name)
             .apply()
 
-    /** A picture duck, or null for the 3D duck. */
-    var sticker: DuckSticker?
-        get() = sp.getString("sticker", null)?.let { n -> DuckSticker.entries.firstOrNull { it.name == n } }
-        set(v) = sp.edit().putString("sticker", v?.name).apply()
-
     /** Which sections of the app page are folded open. */
     fun isOpen(section: String, default: Boolean) = sp.getBoolean("open_$section", default)
     fun setOpen(section: String, open: Boolean) = sp.edit().putBoolean("open_$section", open).apply()

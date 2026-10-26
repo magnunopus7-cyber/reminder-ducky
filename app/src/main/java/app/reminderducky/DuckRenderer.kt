@@ -1,10 +1,8 @@
 package app.reminderducky
 
 import android.content.Context
-import android.graphics.BitmapFactory
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
-import android.opengl.GLUtils
 import android.util.Log
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -26,15 +24,11 @@ enum class Mood { NORMAL, HAPPY, EXCITED, SLEEPY, SURPRISED }
  * Draws the duck with a single full-screen fragment shader (assets/duck.frag)
  * and gives it a little personality: idle bobbing and blinking, turning to
  * face the screen, moods with matching eyes and symbols, and a squish on tap.
- * A picture duck (sticker) is drawn by assets/sticker.frag with the same moves.
  */
 class DuckRenderer(context: Context) : GLSurfaceView.Renderer {
     private val assets = context.applicationContext.assets
-    private val res = context.applicationContext.resources
 
     @Volatile var look = DuckLook()
-    /** A picture duck to show instead of the 3D one. */
-    @Volatile var sticker: DuckSticker? = null
     @Volatile var facingRight = true
     /** True while a reminder is waiting: the duck stays excited. */
     @Volatile var alerting = false
@@ -55,11 +49,6 @@ class DuckRenderer(context: Context) : GLSurfaceView.Renderer {
     private var program = 0
     private var aPos = 0
     private val u = HashMap<String, Int>()
-    private var stickerProgram = 0
-    private var stickerPos = 0
-    private val su = HashMap<String, Int>()
-    private var texture = 0
-    private var loadedSticker: DuckSticker? = null
     private var width = 1
     private var height = 1
 
@@ -100,15 +89,6 @@ class DuckRenderer(context: Context) : GLSurfaceView.Renderer {
         aPos = GLES20.glGetAttribLocation(program, "aPos")
         u.clear()
         for (name in UNIFORMS) u[name] = GLES20.glGetUniformLocation(program, name)
-        stickerProgram = buildProgram(readAsset("duck.vert"), readAsset("sticker.frag"))
-        stickerPos = GLES20.glGetAttribLocation(stickerProgram, "aPos")
-        su.clear()
-        for (name in STICKER_UNIFORMS) su[name] = GLES20.glGetUniformLocation(stickerProgram, name)
-        // A new surface means a new GL context: textures must be uploaded again.
-        val tex = IntArray(1)
-        GLES20.glGenTextures(1, tex, 0)
-        texture = tex[0]
-        loadedSticker = null
         yaw = if (facingRight) YAW_RIGHT else YAW_LEFT
         lastNanos = System.nanoTime()
     }
@@ -211,11 +191,6 @@ class DuckRenderer(context: Context) : GLSurfaceView.Renderer {
 
         GLES20.glClearColor(0f, 0f, 0f, 0f)
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
-        val st = sticker
-        if (st != null && stickerProgram != 0) {
-            drawSticker(st, bob, roll, sx, sy, deco, decoAmt)
-            return
-        }
         if (program == 0) return
         GLES20.glUseProgram(program)
         val l = look
@@ -241,39 +216,6 @@ class DuckRenderer(context: Context) : GLSurfaceView.Renderer {
     }
 
     private fun u(name: String) = u[name] ?: -1
-
-    private fun drawSticker(st: DuckSticker, bob: Float, roll: Float, sx: Float, sy: Float, deco: Float, decoAmt: Float) {
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texture)
-        if (loadedSticker != st) {
-            val bmp = BitmapFactory.decodeResource(res, st.image, BitmapFactory.Options().apply { inScaled = false })
-            if (bmp != null) {
-                GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bmp, 0)
-                bmp.recycle()
-                GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D)
-                GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR_MIPMAP_LINEAR)
-                GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR)
-                GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE)
-                GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE)
-            }
-            loadedSticker = st
-        }
-        GLES20.glUseProgram(stickerProgram)
-        fun loc(name: String) = su[name] ?: -1
-        GLES20.glUniform2f(loc("uRes"), width.toFloat(), height.toFloat())
-        GLES20.glUniform1i(loc("uTex"), 0)
-        // The 3D duck sits about twice as far away, so its hops look half as big.
-        GLES20.glUniform1f(loc("uBob"), bob * 0.5f)
-        GLES20.glUniform1f(loc("uRoll"), roll)
-        GLES20.glUniform2f(loc("uScale"), sx, sy)
-        GLES20.glUniform1f(loc("uFlip"), 1f)
-        GLES20.glUniform1f(loc("uDeco"), deco)
-        GLES20.glUniform1f(loc("uDecoAmt"), decoAmt)
-        GLES20.glUniform1f(loc("uDecoSide"), if (facingRight) 1f else -1f)
-        GLES20.glEnableVertexAttribArray(stickerPos)
-        GLES20.glVertexAttribPointer(stickerPos, 2, GLES20.GL_FLOAT, false, 0, quad)
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4)
-    }
 
     private fun readAsset(name: String) = assets.open(name).bufferedReader().use { it.readText() }
 
@@ -317,9 +259,6 @@ class DuckRenderer(context: Context) : GLSurfaceView.Renderer {
         private val UNIFORMS = listOf(
             "uRes", "uRot", "uBob", "uScale", "uMat", "uBody", "uHead", "uBeak", "uAcc",
             "uAccA", "uAccB", "uEyeMode", "uEyeR", "uDeco", "uDecoAmt", "uDecoSide",
-        )
-        private val STICKER_UNIFORMS = listOf(
-            "uRes", "uTex", "uBob", "uRoll", "uScale", "uFlip", "uDeco", "uDecoAmt", "uDecoSide",
         )
     }
 }

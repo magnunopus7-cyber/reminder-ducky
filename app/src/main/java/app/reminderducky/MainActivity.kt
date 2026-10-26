@@ -62,7 +62,6 @@ class MainActivity : AppCompatActivity() {
 
         preview = DuckGLView(this).apply {
             renderer.look = prefs.look
-            renderer.sticker = prefs.sticker
             renderer.facingRight = false
             renderer.sleepsAtNight = false
             renderer.sleepsWhenIdle = false
@@ -248,21 +247,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun dp(v: Int) = (v * resources.displayMetrics.density).roundToInt()
 
-    /** Switches to a 3D look (and away from any picture duck). */
     private fun applyLook(look: DuckLook) {
         prefs.look = look
-        prefs.sticker = null
-        showChosenDuck(Mood.HAPPY)
-    }
-
-    private fun applySticker(sticker: DuckSticker) {
-        prefs.sticker = sticker
         showChosenDuck(Mood.HAPPY)
     }
 
     private fun showChosenDuck(mood: Mood) {
         preview.renderer.look = prefs.look
-        preview.renderer.sticker = prefs.sticker
         preview.renderer.squash()
         preview.renderer.react(mood, 1.5f)
         DuckService.instance?.refreshAppearance()
@@ -302,13 +293,11 @@ class MainActivity : AppCompatActivity() {
         foldable("todoCard", true)
         foldable("skinsCard", false)
         foldable("customizeCard", false)
-        for (key in listOf("material", "colour", "accessory", "size", "language")) foldable(key, false)
+        for (key in listOf("material", "accessory", "size", "language")) foldable(key, false)
     }
 
     // ---- Picture options ----
 
-    private val skinCards = mutableMapOf<DuckSkin, MaterialCardView>()
-    private val stickerCards = mutableMapOf<DuckSticker, MaterialCardView>()
     private val materialCards = mutableMapOf<DuckMaterial, MaterialCardView>()
     private val colorCards = mutableMapOf<DuckColor, MaterialCardView>()
     private val accessoryCards = mutableMapOf<DuckAccessory, MaterialCardView>()
@@ -350,19 +339,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun buildCustomizer() {
         setUpFolds()
-        val skinRow = findViewById<LinearLayout>(R.id.skinRow)
-        for (skin in DuckSkin.entries) {
-            skinCards[skin] = optionCard(skinRow, skin.thumb, skin.label) { applyLook(skin.look) }
-        }
-        val stickerRow = findViewById<LinearLayout>(R.id.stickerRow)
-        for (st in DuckSticker.entries) {
-            stickerCards[st] = optionCard(stickerRow, st.image, st.label) { applySticker(st) }
-        }
         val materialRow = findViewById<LinearLayout>(R.id.materialRow)
         for (m in DuckMaterial.entries) {
             materialCards[m] = optionCard(materialRow, m.thumb, m.label) { applyLook(prefs.look.copy(material = m)) }
         }
-        val colorRow = findViewById<LinearLayout>(R.id.colorRow)
+        val colorRow = findViewById<ViewGroup>(R.id.colorRow)
         for (c in DuckColor.entries) {
             colorCards[c] = optionCard(colorRow, c.thumb, c.label) { applyLook(prefs.look.copy(color = c)) }
         }
@@ -374,7 +355,7 @@ class MainActivity : AppCompatActivity() {
         val sizeRow = findViewById<LinearLayout>(R.id.sizeRow)
         val sizes = DuckSize.entries
         for ((i, s) in sizes.withIndex()) {
-            sizeCards[s] = optionCard(sizeRow, R.drawable.thumb_skin_classic, s.label, imageDp = 30 + i * 42 / (sizes.size - 1)) {
+            sizeCards[s] = optionCard(sizeRow, R.drawable.thumb_col_sunny, s.label, imageDp = 30 + i * 42 / (sizes.size - 1)) {
                 prefs.size = s
                 DuckService.instance?.refreshAppearance()
                 preview.renderer.squash()
@@ -382,10 +363,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Language: follow the phone, or pick English or Korean just for Ducky.
+        // Language: English or Korean just for Ducky. Until one is picked, the phone's language is used.
         val languageGroup = findViewById<ChipGroup>(R.id.languageGroup)
-        val languages = listOf("" to getString(R.string.lang_auto), "en" to "English", "ko" to "한국어")
-        val current = AppCompatDelegate.getApplicationLocales().toLanguageTags().substringBefore('-')
+        val languages = listOf("en" to "English", "ko" to "한국어")
+        val current = (AppCompatDelegate.getApplicationLocales()[0] ?: Locale.getDefault()).language
+            .let { if (it == "ko") "ko" else "en" }
         for ((tag, name) in languages) {
             val chip = filterChip(name).also { languageGroup.addView(it) }
             if (tag == current) {
@@ -393,9 +375,7 @@ class MainActivity : AppCompatActivity() {
                 findViewById<TextView>(R.id.languageValue).text = name
             }
             chip.setOnClickListener {
-                AppCompatDelegate.setApplicationLocales(
-                    if (tag.isEmpty()) LocaleListCompat.getEmptyLocaleList() else LocaleListCompat.forLanguageTags(tag)
-                )
+                AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(tag))
             }
         }
         syncCustomizer()
@@ -410,19 +390,15 @@ class MainActivity : AppCompatActivity() {
     /** Outlines the current choices and shows them next to each folded title. */
     private fun syncCustomizer() {
         val look = prefs.look
-        val sticker = prefs.sticker
         val accent = ContextCompat.getColor(this, R.color.duck_yellow)
         fun <K> mark(cards: Map<K, MaterialCardView>, chosen: K?) {
             for ((k, card) in cards) card.strokeColor = if (k == chosen) accent else Color.TRANSPARENT
         }
-        mark(skinCards, if (sticker == null) DuckSkin.entries.firstOrNull { it.look == look } else null)
-        mark(stickerCards, sticker)
         mark(materialCards, look.material)
         mark(colorCards, look.color)
         mark(accessoryCards, look.accessory)
         mark(sizeCards, prefs.size)
         findViewById<TextView>(R.id.materialValue).setText(look.material.label)
-        findViewById<TextView>(R.id.colourValue).setText(look.color.label)
         findViewById<TextView>(R.id.accessoryValue).setText(look.accessory.label)
         findViewById<TextView>(R.id.sizeValue).setText(prefs.size.label)
     }

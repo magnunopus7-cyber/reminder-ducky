@@ -21,8 +21,7 @@ enum class DuckColor(@StringRes val label: Int, @DrawableRes val thumb: Int, val
     LAVENDER(R.string.col_lavender, R.drawable.thumb_col_lavender, 0xC2A6FF),
     SNOW(R.string.col_snow, R.drawable.thumb_col_snow, 0xF2F5FF),
     GOLD(R.string.col_gold, R.drawable.thumb_col_gold, 0xFFB838),
-    SILVER(R.string.col_silver, R.drawable.thumb_col_silver, 0xEBEBF2),
-    SAILOR(R.string.col_sailor, R.drawable.thumb_col_sailor, 0x6B9EF2, 0xF7F7FF);
+    SILVER(R.string.col_silver, R.drawable.thumb_col_silver, 0xEBEBF2);
 
     val bodyRgb get() = rgb(body)
     val headRgb get() = rgb(head)
@@ -68,39 +67,4 @@ data class DuckLook(
     val accessory: DuckAccessory = DuckAccessory.NONE,
 ) {
     val beakRgb: FloatArray get() = rgb(if (material == DuckMaterial.METALLIC) 0xFF731F else 0xFF801F)
-}
-
-/** Ready-made looks, like collectible figures. Each one is just a combination of the options. */
-enum class DuckSkin(@StringRes val label: Int, @DrawableRes val thumb: Int, val look: DuckLook) {
-    CLASSIC(R.string.skin_classic, R.drawable.thumb_skin_classic, DuckLook(DuckMaterial.GLOSSY, DuckColor.SUNNY)),
-    PASTEL(R.string.skin_pastel, R.drawable.thumb_skin_pastel, DuckLook(DuckMaterial.GLOSSY, DuckColor.BLOSSOM, DuckAccessory.FLOWER)),
-    CRYSTAL(R.string.skin_crystal, R.drawable.thumb_skin_crystal, DuckLook(DuckMaterial.CRYSTAL, DuckColor.SNOW)),
-    GOLD(R.string.skin_gold, R.drawable.thumb_skin_gold, DuckLook(DuckMaterial.METALLIC, DuckColor.GOLD)),
-    SILVER(R.string.skin_silver, R.drawable.thumb_skin_silver, DuckLook(DuckMaterial.METALLIC, DuckColor.SILVER)),
-    FLUFFY(R.string.skin_fluffy, R.drawable.thumb_skin_fluffy, DuckLook(DuckMaterial.FLUFFY, DuckColor.SUNNY)),
-    COSTUME(R.string.skin_costume, R.drawable.thumb_skin_costume, DuckLook(DuckMaterial.GLOSSY, DuckColor.SAILOR, DuckAccessory.BEANIE)),
-    PARTY(R.string.skin_party, R.drawable.thumb_skin_party, DuckLook(DuckMaterial.GLOSSY, DuckColor.SUNNY, DuckAccessory.PARTY)),
-}
-
-/** Picture ducks: a flat image that floats, hops and dozes like the 3D duck. */
-enum class DuckSticker(@StringRes val label: Int, @DrawableRes val image: Int) {
-    SAILOR(R.string.st_sailor, R.drawable.sticker_sailor),
-    FROG(R.string.st_frog, R.drawable.sticker_frog),
-    NIGHTCAP(R.string.st_nightcap, R.drawable.sticker_nightcap),
-    PARTY_HAT(R.string.st_party_hat, R.drawable.sticker_party_hat),
-    DUCKLING(R.string.st_duckling, R.drawable.sticker_duckling),
-    SUNGLASSES(R.string.st_sunglasses, R.drawable.sticker_sunglasses),
-    BACKPACK(R.string.st_backpack, R.drawable.sticker_backpack),
-    HEART(R.string.st_heart, R.drawable.sticker_heart),
-    MUSIC(R.string.st_music, R.drawable.sticker_music),
-    BEAR(R.string.st_bear, R.drawable.sticker_bear),
-    BATH(R.string.st_bath, R.drawable.sticker_bath),
-    HERO(R.string.st_hero, R.drawable.sticker_hero),
-    SUNHAT(R.string.st_sunhat, R.drawable.sticker_sunhat),
-    BOOKWORM(R.string.st_bookworm, R.drawable.sticker_bookworm),
-    CLOUD(R.string.st_cloud, R.drawable.sticker_cloud),
-    SPROUT(R.string.st_sprout, R.drawable.sticker_sprout),
-    WINK(R.string.st_wink, R.drawable.sticker_wink),
-    SNORKEL(R.string.st_snorkel, R.drawable.sticker_snorkel),
-    BANDANA(R.string.st_bandana, R.drawable.sticker_bandana),
 }
