@@ -57,6 +57,14 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        // Keep the last lines of the page above the phone's navigation bar.
+        val page = findViewById<ViewGroup>(R.id.scroll).getChildAt(0)
+        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(page) { v, insets ->
+            val bottom = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars() or
+                androidx.core.view.WindowInsetsCompat.Type.displayCutout()).bottom
+            v.setPadding(v.paddingLeft, v.paddingTop, v.paddingRight, dp(32) + bottom)
+            insets
+        }
         prefs = Prefs(this)
         store = ReminderStore(this)
 
