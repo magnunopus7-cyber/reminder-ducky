@@ -32,13 +32,19 @@ extension DuckEntry {
 }
 
 enum DuckPicture {
+    /// `lock` pictures are white with the shading kept in transparency, for the one-colour Lock Screen.
+    static func fileName(_ mood: DuckMood, lock: Bool) -> String {
+        (lock ? "duck_lock_" : "duck_") + mood.rawValue + ".png"
+    }
+
     /// The duck as the app last drew it, or the bundled default duck.
-    static func image(_ mood: DuckMood) -> UIImage? {
+    static func image(_ mood: DuckMood, lock: Bool = false) -> UIImage? {
+        let name = fileName(mood, lock: lock)
         if let folder = SharedStore.pictureFolder,
-           let img = UIImage(contentsOfFile: folder.appendingPathComponent("duck_\(mood.rawValue).png").path) {
+           let img = UIImage(contentsOfFile: folder.appendingPathComponent(name).path) {
             return img
         }
-        return UIImage(named: "duck_\(mood.rawValue)")
+        return UIImage(named: String(name.dropLast(4)))
     }
 }
 
@@ -53,8 +59,9 @@ enum DuckTheme {
 
 struct DuckImageView: View {
     let mood: DuckMood
+    var lock = false
     var body: some View {
-        if let img = DuckPicture.image(mood) {
+        if let img = DuckPicture.image(mood, lock: lock) {
             Image(uiImage: img).resizable().scaledToFit()
         } else {
             Text("🦆").font(.system(size: 60))
@@ -174,8 +181,12 @@ struct DuckWidgetView: View {
     }
 
     private var rectangular: some View {
-        HStack(spacing: 4) {
-            DuckImageView(mood: entry.mood).frame(width: 46, height: 46)
+        HStack(spacing: 2) {
+            // As tall as the widget allows: Apple fixes the Lock Screen widget size.
+            DuckImageView(mood: entry.mood, lock: true)
+                .frame(maxHeight: .infinity)
+                .aspectRatio(1, contentMode: .fit)
+                .padding(-4)
             VStack(alignment: .leading, spacing: 0) {
                 if let first = entry.items.first {
                     Text(first.text).font(.headline).lineLimit(1)
@@ -200,7 +211,7 @@ struct DuckWidgetView: View {
     private var circular: some View {
         ZStack {
             AccessoryWidgetBackground()
-            DuckImageView(mood: entry.mood).padding(3)
+            DuckImageView(mood: entry.mood, lock: true).padding(-2)
         }
     }
 }

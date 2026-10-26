@@ -93,7 +93,7 @@ struct DuckLook: Equatable {
     var beak: Int { material == .METALLIC ? 0xFF731F : 0xFF801F }
 
     /// Changes whenever the duck would look different (used to refresh widget pictures).
-    var key: String { "\(material.rawValue)-\(color.rawValue)-\(accessory.id)-v1" }
+    var key: String { "\(material.rawValue)-\(color.rawValue)-\(accessory.id)-v2" }
 
     /// The look as a JavaScript object for duck.html.
     var js: String {

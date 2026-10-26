@@ -60,15 +60,15 @@ final class DuckController: NSObject, ObservableObject, WKNavigationDelegate {
         guard let folder = SharedStore.pictureFolder else { return }
         let key = look.key
         guard SharedStore.defaults.string(forKey: "pictureKey") != key else { return }
-        let moods = DuckMood.allCases
-        var remaining = moods.count
+        let pictures = DuckMood.allCases.flatMap { mood in [false, true].map { (mood, $0) } }
+        var remaining = pictures.count
         var allSaved = true
-        for mood in moods {
-            webView.evaluateJavaScript("duck.snapshot('\(mood.rawValue)', 360)") { result, _ in
+        for (mood, lock) in pictures {
+            webView.evaluateJavaScript("duck.snapshot('\(mood.rawValue)', 360, \(lock))") { result, _ in
                 if let url = result as? String, let comma = url.firstIndex(of: ","),
                    let data = Data(base64Encoded: String(url[url.index(after: comma)...])) {
                     do {
-                        try data.write(to: folder.appendingPathComponent("duck_\(mood.rawValue).png"), options: .atomic)
+                        try data.write(to: folder.appendingPathComponent(DuckPicture.fileName(mood, lock: lock)), options: .atomic)
                     } catch {
                         allSaved = false
                     }
