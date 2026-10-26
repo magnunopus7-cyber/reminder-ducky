@@ -15,7 +15,8 @@ uniform vec3 uBody;      // body colour
 uniform vec3 uHead;      // head colour (differs for two-tone skins)
 uniform vec3 uBeak;
 uniform float uAcc;      // 0 none, 1 flower, 2 beanie, 3 party hat, 4 nightcap, 5 sprout,
-                         // 6 heart shades, 7 headphones, 8 cape, 9 cap
+                         // 6 heart shades, 7 headphones, 8 cape, 9 cap, 10 frog hood,
+                         // 11 bear hood, 12 sunhat, 13 bandana, 14 snorkel, 15 backpack
 uniform vec3 uAccA;
 uniform vec3 uAccB;
 uniform float uEyeMode;  // 0 open, 1 happy ^ ^, 2 sleepy u u
@@ -64,6 +65,23 @@ float sdTaper(vec3 p, vec3 a, vec3 b, float r1, float r2) {
     vec3 pa = p - a, ba = b - a;
     float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
     return length(pa - ba * h) - mix(r1, r2, h);
+}
+
+float sdRoundBox(vec3 p, vec3 b, float r) {
+    vec3 q = abs(p) - b + r;
+    return length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0) - r;
+}
+
+float sdRoundRect(vec2 p, vec2 b, float r) {
+    vec2 q = abs(p) - b + r;
+    return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r;
+}
+
+// A hood around the head with an opening for the face (h is relative to the head centre).
+float sdHood(vec3 h) {
+    float shell = length(h - vec3(-0.03, 0.01, 0.0)) - 0.415;
+    float face = sdEllipsoid(h - vec3(0.34, -0.03, 0.0), vec3(0.30, 0.29, 0.31));
+    return max(max(shell, -face), -0.27 - h.y);
 }
 
 float sdHeart2(vec2 p) {
@@ -245,7 +263,7 @@ vec2 map(vec3 pw) {
                 scarf = min(scarf, knot);
                 if (scarf < res.x) res = vec2(scarf, 4.0);
             }
-        } else {
+        } else if (uAcc < 9.5) {
             // Cap: a round dome with a short visor and a button on top.
             if (length(h - vec3(0.0, 0.25, 0.0)) < 0.5) {
                 float cap = max(length(h * vec3(1.0, 0.92, 1.0)) - 0.39, 0.15 - h.y);
@@ -255,6 +273,79 @@ vec2 map(vec3 pw) {
                 if (cap < res.x) res = vec2(cap, 3.0);
                 float button = length(h - vec3(0.0, 0.425, 0.0)) - 0.04;
                 if (button < res.x) res = vec2(button, 4.0);
+            }
+        } else if (uAcc < 10.5) {
+            // Frog hood: a green hood with big frog eyes on top.
+            if (length(h - vec3(0.0, 0.08, 0.0)) < 0.6) {
+                float hood = sdHood(h);
+                vec3 e = vec3(h.x, h.y, abs(h.z)) - vec3(0.03, 0.38, 0.17);
+                hood = smin(hood, length(e) - 0.13, 0.05);
+                if (hood < res.x) res = vec2(hood, 3.0);
+                float white = length(e - vec3(0.07, 0.02, 0.0)) - 0.09;
+                if (white < res.x) res = vec2(white, 4.0);
+                float pupil = length(e - vec3(0.15, 0.03, 0.0)) - 0.045;
+                if (pupil < res.x) res = vec2(pupil, 2.0);
+            }
+        } else if (uAcc < 11.5) {
+            // Bear hood: a soft cream hood with round ears.
+            if (length(h - vec3(0.0, 0.08, 0.0)) < 0.6) {
+                float hood = sdHood(h);
+                vec3 e = vec3(h.x, h.y, abs(h.z)) - vec3(-0.06, 0.36, 0.25);
+                float ear = sdEllipsoid(e, vec3(0.06, 0.11, 0.11));
+                hood = smin(hood, ear, 0.04);
+                if (hood < res.x) res = vec2(hood, 3.0);
+                float inner = sdEllipsoid(e - vec3(0.045, 0.0, 0.0), vec3(0.03, 0.07, 0.07));
+                if (inner < res.x) res = vec2(inner, 4.0);
+            }
+        } else if (uAcc < 12.5) {
+            // Sunhat: a straw crown, a wide tilted brim and a ribbon.
+            vec3 q = h - vec3(-0.02, 0.20, 0.0);
+            q = vec3(0.9801 * q.x + 0.1987 * q.y, -0.1987 * q.x + 0.9801 * q.y, q.z);
+            if (length(q) < 0.72) {
+                float crown = max(sdEllipsoid(q - vec3(0.0, 0.02, 0.0), vec3(0.33, 0.25, 0.33)), -0.04 - q.y);
+                float brim = sdEllipsoid(q + vec3(0.0, 0.03, 0.0), vec3(0.55, 0.03, 0.54));
+                float hat = smin(crown, brim, 0.04);
+                if (hat < res.x) res = vec2(hat, 3.0);
+                float ribbon = max(abs(sdEllipsoid(q - vec3(0.0, 0.02, 0.0), vec3(0.335, 0.255, 0.335))) - 0.012,
+                                   abs(q.y - 0.05) - 0.035);
+                if (ribbon < res.x) res = vec2(ribbon, 4.0);
+            }
+        } else if (uAcc < 13.5) {
+            // Bandana: a dotted scarf over the top of the head, knotted at the back.
+            if (length(h - vec3(-0.1, 0.12, 0.0)) < 0.6) {
+                float cover = max(length(h) - 0.385, dot(h, vec3(0.85, -0.53, 0.0)) - 0.03);
+                cover = max(cover, -0.02 - h.y);
+                vec3 k = h - vec3(-0.33, 0.02, 0.20);
+                float knot = length(k) - 0.06;
+                knot = min(knot, sdTaper(k, vec3(0.0), vec3(-0.12, -0.06, 0.14), 0.05, 0.02));
+                knot = min(knot, sdTaper(k, vec3(0.0), vec3(-0.15, 0.03, 0.06), 0.05, 0.02));
+                if (min(cover, knot) < res.x) res = vec2(min(cover, knot), 3.0);
+            }
+        } else if (uAcc < 14.5) {
+            // Snorkel: a pink mask frame around the eyes, a strap and a breathing tube.
+            if (length(h - vec3(0.1, 0.1, 0.0)) < 0.62) {
+                float rr = length(h.xz);
+                vec2 sv = vec2(atan(h.z, h.x) * 0.38, h.y - 0.09);
+                float box = sdRoundRect(sv, vec2(0.26, 0.11), 0.08);
+                float frame = max(abs(box) - 0.022, abs(rr - 0.37) - 0.03);
+                float strap = max(max(abs(sv.y) - 0.03, abs(rr - 0.37) - 0.015), h.x + 0.05);
+                float tube = sdTaper(h, vec3(0.12, -0.20, 0.33), vec3(0.02, 0.48, 0.30), 0.035, 0.035);
+                float mask = min(min(frame, strap), tube);
+                if (mask < res.x) res = vec2(mask, 3.0);
+                float mouth = sdEllipsoid(h - vec3(0.13, -0.22, 0.31), vec3(0.06, 0.05, 0.06));
+                if (mouth < res.x) res = vec2(mouth, 4.0);
+            }
+        } else {
+            // Backpack: a rounded pack on the back with a pocket and shoulder straps.
+            if (length(p - vec3(-0.35, -0.08, 0.0)) < 0.6) {
+                float pack = sdRoundBox(p - vec3(-0.56, -0.10, 0.0), vec3(0.13, 0.22, 0.25), 0.09);
+                vec3 s = vec3(p.x, p.y, abs(p.z));
+                float strap = sdTaper(s, vec3(-0.45, 0.05, 0.18), vec3(-0.05, 0.08, 0.28), 0.03, 0.03);
+                strap = min(strap, sdTaper(s, vec3(-0.05, 0.08, 0.28), vec3(0.30, -0.05, 0.31), 0.03, 0.03));
+                pack = min(pack, strap);
+                if (pack < res.x) res = vec2(pack, 3.0);
+                float pocket = sdRoundBox(p - vec3(-0.68, -0.18, 0.0), vec3(0.04, 0.11, 0.17), 0.04);
+                if (pocket < res.x) res = vec2(pocket, 4.0);
             }
         }
     }
@@ -324,6 +415,17 @@ vec4 shade(vec3 pos, vec3 n, vec3 rd, float id) {
         if (type > 1.5) type = 0.0;
         if (uAcc > 1.5 && type > 0.5) type = 0.0;
         if (abs(uAcc - 8.0) < 0.5) type = 3.0; // the cape and scarf are soft fabric
+        if (abs(uAcc - 11.0) < 0.5 && id < 3.5) type = 3.0; // fluffy bear hood
+        if (abs(uAcc - 12.0) < 0.5 && id < 3.5) {
+            // Woven straw.
+            float r = length((op - HEAD_C).xz);
+            base *= 0.86 + 0.14 * step(0.5, fract(r * 34.0 + op.y * 20.0));
+        }
+        if (abs(uAcc - 13.0) < 0.5) {
+            // White polka dots.
+            vec3 c = fract(op * 11.0) - 0.5;
+            base = mix(base, uAccB, 1.0 - smoothstep(0.18, 0.24, length(c)));
+        }
     }
 
     // Rosy cheeks on everything but metal and crystal.

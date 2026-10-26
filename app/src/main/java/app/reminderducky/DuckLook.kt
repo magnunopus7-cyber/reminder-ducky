@@ -38,7 +38,13 @@ enum class DuckAccessory(@StringRes val label: Int, @DrawableRes val thumb: Int,
     SHADES(R.string.acc_shades, R.drawable.thumb_acc_shades, 6f, 0xFF8FB0, 0x2B2530),
     HEADPHONES(R.string.acc_headphones, R.drawable.thumb_acc_headphones, 7f, 0x4A90E2, 0xF2F6FF),
     CAPE(R.string.acc_cape, R.drawable.thumb_acc_cape, 8f, 0xF0483E, 0xE23B32),
-    CAP(R.string.acc_cap, R.drawable.thumb_acc_cap, 9f, 0x4A90E2, 0xFFD45A);
+    CAP(R.string.acc_cap, R.drawable.thumb_acc_cap, 9f, 0x4A90E2, 0xFFD45A),
+    FROG(R.string.st_frog, R.drawable.thumb_acc_frog, 10f, 0x6CC24A, 0xFFFFFF),
+    BEAR(R.string.st_bear, R.drawable.thumb_acc_bear, 11f, 0xF5E9D0, 0xF2C14E),
+    SUNHAT(R.string.st_sunhat, R.drawable.thumb_acc_sunhat, 12f, 0xE8C88A, 0xFFD24D),
+    BANDANA(R.string.st_bandana, R.drawable.thumb_acc_bandana, 13f, 0xF06A3A, 0xFFFFFF),
+    SNORKEL(R.string.st_snorkel, R.drawable.thumb_acc_snorkel, 14f, 0xFF7FB3, 0x8FB8F0),
+    BACKPACK(R.string.st_backpack, R.drawable.thumb_acc_backpack, 15f, 0x4A90E2, 0x8FC1FF);
 
     val aRgb get() = rgb(a)
     val bRgb get() = rgb(b)
@@ -73,6 +79,12 @@ enum class DuckSkin(@StringRes val label: Int, @DrawableRes val thumb: Int, val 
     HEADPHONES(R.string.acc_headphones, R.drawable.thumb_acc_headphones, DuckLook(accessory = DuckAccessory.HEADPHONES)),
     HERO(R.string.st_hero, R.drawable.thumb_acc_cape, DuckLook(accessory = DuckAccessory.CAPE)),
     CAP(R.string.acc_cap, R.drawable.thumb_acc_cap, DuckLook(accessory = DuckAccessory.CAP)),
+    FROG(R.string.st_frog, R.drawable.thumb_acc_frog, DuckLook(accessory = DuckAccessory.FROG)),
+    BEAR(R.string.st_bear, R.drawable.thumb_acc_bear, DuckLook(accessory = DuckAccessory.BEAR)),
+    SUNHAT(R.string.st_sunhat, R.drawable.thumb_acc_sunhat, DuckLook(accessory = DuckAccessory.SUNHAT)),
+    BANDANA(R.string.st_bandana, R.drawable.thumb_acc_bandana, DuckLook(accessory = DuckAccessory.BANDANA)),
+    SNORKEL(R.string.st_snorkel, R.drawable.thumb_acc_snorkel, DuckLook(accessory = DuckAccessory.SNORKEL)),
+    BACKPACK(R.string.st_backpack, R.drawable.thumb_acc_backpack, DuckLook(accessory = DuckAccessory.BACKPACK)),
 }
 
 /** Picture ducks: a flat image that floats, hops and dozes like the 3D duck. */
