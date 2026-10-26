@@ -15,6 +15,7 @@ import android.text.format.DateFormat
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -314,7 +315,7 @@ class MainActivity : AppCompatActivity() {
     private val sizeCards = mutableMapOf<DuckSize, MaterialCardView>()
 
     /** A small card with a picture and a name, outlined when it is the current choice. */
-    private fun optionCard(row: LinearLayout, image: Int, label: Int, imageDp: Int = 64, onPick: () -> Unit): MaterialCardView {
+    private fun optionCard(row: ViewGroup, image: Int, label: Int, imageDp: Int = 64, onPick: () -> Unit): MaterialCardView {
         val card = MaterialCardView(this).apply {
             radius = dp(18).toFloat()
             strokeWidth = dp(2)
@@ -342,7 +343,7 @@ class MainActivity : AppCompatActivity() {
             setPadding(0, dp(4), 0, 0)
         }, LinearLayout.LayoutParams(dp(80), LinearLayout.LayoutParams.WRAP_CONTENT))
         card.addView(col)
-        row.addView(card, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+        row.addView(card, ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             .apply { marginEnd = dp(8); topMargin = dp(4); bottomMargin = dp(4); marginStart = dp(2) })
         return card
     }
@@ -365,7 +366,7 @@ class MainActivity : AppCompatActivity() {
         for (c in DuckColor.entries) {
             colorCards[c] = optionCard(colorRow, c.thumb, c.label) { applyLook(prefs.look.copy(color = c)) }
         }
-        val accessoryRow = findViewById<LinearLayout>(R.id.accessoryRow)
+        val accessoryRow = findViewById<ViewGroup>(R.id.accessoryRow)
         for (a in DuckAccessory.entries) {
             accessoryCards[a] = optionCard(accessoryRow, a.thumb, a.label) { applyLook(prefs.look.copy(accessory = a)) }
         }

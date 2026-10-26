@@ -16,7 +16,8 @@ uniform vec3 uHead;      // head colour (differs for two-tone skins)
 uniform vec3 uBeak;
 uniform float uAcc;      // 0 none, 1 flower, 2 beanie, 3 party hat, 4 nightcap, 5 sprout,
                          // 6 heart shades, 7 headphones, 8 cape, 9 cap, 10 frog hood,
-                         // 11 bear hood, 12 sunhat, 13 bandana, 14 snorkel, 15 backpack
+                         // 11 bear hood, 12 sunhat, 13 bandana, 14 snorkel, 15 backpack,
+                         // 16 sailor, 17 duckling, 18 heart hug, 19 bubble bath, 20 bookworm, 21 cloud
 uniform vec3 uAccA;
 uniform vec3 uAccB;
 uniform float uEyeMode;  // 0 open, 1 happy ^ ^, 2 sleepy u u
@@ -82,6 +83,29 @@ float sdHood(vec3 h) {
     float shell = length(h - vec3(-0.03, 0.01, 0.0)) - 0.415;
     float face = sdEllipsoid(h - vec3(0.34, -0.03, 0.0), vec3(0.30, 0.29, 0.31));
     return max(max(shell, -face), -0.27 - h.y);
+}
+
+// A mini rubber duck for the duckling friend (q in its own little space).
+vec2 miniDuck(vec3 q) {
+    float d = sdEllipsoid(q - vec3(0.0, -0.22, 0.0), vec3(0.55, 0.36, 0.46));
+    d = smin(d, length(q - HEAD_C) - HEAD_R, 0.10);
+    vec2 r = vec2(d, 3.0);
+    float beak = sdEllipsoid(q - vec3(0.52, 0.20, 0.0), vec3(0.16, 0.07, 0.17));
+    if (beak < r.x) r = vec2(beak, 4.0);
+    float eye = sdEllipsoid(vec3(q.x, q.y, abs(q.z)) - EYE_C, vec3(0.07, 0.1, 0.06));
+    if (eye < r.x) r = vec2(eye, 2.0);
+    return r;
+}
+
+// Puffs spread around a ring: n of them at radius rad and height y.
+float puffRing(vec3 p, float n, float rad, float y, float size) {
+    float sec = 6.2831853 / n;
+    float a = atan(p.z, p.x);
+    float k = floor(a / sec + 0.5);
+    float aa = a - k * sec;
+    vec3 lp = vec3(length(p.xz) * cos(aa), p.y, length(p.xz) * sin(aa));
+    float wob = 0.75 + 0.5 * fract(sin(k * 12.9898) * 43758.5453);
+    return length(lp - vec3(rad, y, 0.0)) - size * wob;
 }
 
 float sdHeart2(vec2 p) {
@@ -335,7 +359,7 @@ vec2 map(vec3 pw) {
                 float mouth = sdEllipsoid(h - vec3(0.13, -0.22, 0.31), vec3(0.06, 0.05, 0.06));
                 if (mouth < res.x) res = vec2(mouth, 4.0);
             }
-        } else {
+        } else if (uAcc < 15.5) {
             // Backpack: a rounded pack on the back with a pocket and shoulder straps.
             if (length(p - vec3(-0.35, -0.08, 0.0)) < 0.6) {
                 float pack = sdRoundBox(p - vec3(-0.56, -0.10, 0.0), vec3(0.13, 0.22, 0.25), 0.09);
@@ -346,6 +370,72 @@ vec2 map(vec3 pw) {
                 if (pack < res.x) res = vec2(pack, 3.0);
                 float pocket = sdRoundBox(p - vec3(-0.68, -0.18, 0.0), vec3(0.04, 0.11, 0.17), 0.04);
                 if (pocket < res.x) res = vec2(pocket, 4.0);
+            }
+        } else if (uAcc < 16.5) {
+            // Sailor: a tilted beret with a button, and a neckerchief.
+            if (length(p - vec3(0.12, 0.25, 0.0)) < 0.75) {
+                vec3 q = h - vec3(-0.04, 0.27, 0.0);
+                q = vec3(0.9553 * q.x + 0.2955 * q.y, -0.2955 * q.x + 0.9553 * q.y, q.z);
+                float beret = sdEllipsoid(q, vec3(0.40, 0.13, 0.40));
+                beret = smin(beret, sdTorus(q + vec3(0.0, 0.07, 0.0), 0.31, 0.05), 0.04);
+                vec3 n = p - vec3(0.13, 0.06, 0.0);
+                n = vec3(0.9553 * n.x + 0.2955 * n.y, -0.2955 * n.x + 0.9553 * n.y, n.z);
+                float scarf = sdEllipsoid(vec3(length(n.xz) - 0.33, n.y, 0.0), vec3(0.08, 0.065, 1.0));
+                vec3 k = vec3(p.x, p.y, abs(p.z)) - vec3(0.46, -0.04, 0.06);
+                scarf = min(scarf, sdTaper(k, vec3(0.0), vec3(0.02, -0.14, 0.05), 0.05, 0.03));
+                float blue = min(beret, scarf);
+                if (blue < res.x) res = vec2(blue, 3.0);
+                float button = length(q - vec3(0.06, 0.13, 0.0)) - 0.045;
+                if (button < res.x) res = vec2(button, 4.0);
+            }
+        } else if (uAcc < 17.5) {
+            // Duckling friend: a tiny duck riding on top of the head.
+            vec3 q = (h - vec3(-0.02, 0.47, 0.0)) / 0.32;
+            if (length(q) < 1.2) {
+                vec2 m = miniDuck(q);
+                m.x *= 0.32;
+                if (m.x < res.x) res = m;
+            }
+        } else if (uAcc < 18.5) {
+            // A puffy heart hugged in front of the tummy.
+            vec3 q = p - vec3(0.58, -0.15, 0.0);
+            if (length(q) < 0.36) {
+                float hd = sdHeart2(vec2(q.z, q.y) / 0.27 + vec2(0.0, 0.5)) * 0.27;
+                vec2 w = vec2(hd + 0.03, abs(q.x) - 0.045);
+                float heart = length(max(w, 0.0)) + min(max(w.x, w.y), 0.0) - 0.04;
+                if (heart < res.x) res = vec2(heart, 3.0);
+            }
+        } else if (uAcc < 19.5) {
+            // Bubble bath: a pool of water with foam all around.
+            if (length(p - vec3(0.0, -0.5, 0.0)) < 0.95) {
+                float water = sdEllipsoid(p - vec3(0.0, -0.55, 0.0), vec3(0.80, 0.07, 0.72));
+                if (water < res.x) res = vec2(water, 3.0);
+                float foam = puffRing(p, 9.0, 0.60, -0.46, 0.12);
+                foam = smin(foam, puffRing(p + vec3(0.0, 0.0, 0.0), 7.0, 0.70, -0.52, 0.10), 0.04);
+                if (foam < res.x) res = vec2(foam, 4.0);
+            }
+        } else if (uAcc < 20.5) {
+            // Bookworm: round glasses and an open book held in front.
+            vec3 g = vec3(p.x, p.y, abs(p.z));
+            vec3 e2 = g - (EYE_C + EYE_F * 0.07);
+            vec2 uv = vec2(dot(e2, EYE_S), dot(e2, EYE_U));
+            float w = dot(e2, EYE_F);
+            float ring = max(abs(length(uv) - 0.11) - 0.014, abs(w) - 0.014);
+            vec3 outer = EYE_C + EYE_F * 0.07 - EYE_S * 0.12;
+            ring = min(ring, sdTaper(g, outer, vec3(-0.02, 0.40, 0.38), 0.014, 0.012));
+            ring = min(ring, sdTaper(g, vec3(0.555, 0.41, 0.075), vec3(0.555, 0.41, 0.0), 0.014, 0.014));
+            if (ring < res.x) res = vec2(ring, 4.0);
+            vec3 b = vec3(p.x, p.y, abs(p.z)) - vec3(0.60, -0.16, 0.0);
+            b = vec3(0.866 * b.x + 0.5 * b.z, b.y, -0.5 * b.x + 0.866 * b.z);
+            float book = sdRoundBox(b - vec3(0.0, 0.0, 0.11), vec3(0.018, 0.13, 0.11), 0.012);
+            if (book < res.x) res = vec2(book, 3.0);
+        } else {
+            // Cloud nap: a soft cloud to doze on.
+            if (length(p - vec3(0.0, -0.5, 0.0)) < 0.95) {
+                float cloud = puffRing(p, 8.0, 0.52, -0.48, 0.17);
+                cloud = smin(cloud, sdEllipsoid(p - vec3(0.0, -0.56, 0.0), vec3(0.70, 0.12, 0.62)), 0.08);
+                cloud = smin(cloud, puffRing(p, 6.0, 0.72, -0.56, 0.12), 0.06);
+                if (cloud < res.x) res = vec2(cloud, 3.0);
             }
         }
     }
@@ -415,7 +505,7 @@ vec4 shade(vec3 pos, vec3 n, vec3 rd, float id) {
         if (type > 1.5) type = 0.0;
         if (uAcc > 1.5 && type > 0.5) type = 0.0;
         if (abs(uAcc - 8.0) < 0.5) type = 3.0; // the cape and scarf are soft fabric
-        if (abs(uAcc - 11.0) < 0.5 && id < 3.5) type = 3.0; // fluffy bear hood
+        if ((abs(uAcc - 11.0) < 0.5 || uAcc > 20.5) && id < 3.5) type = 3.0; // fluffy bear hood, cloud
         if (abs(uAcc - 12.0) < 0.5 && id < 3.5) {
             // Woven straw.
             float r = length((op - HEAD_C).xz);

@@ -44,7 +44,14 @@ enum class DuckAccessory(@StringRes val label: Int, @DrawableRes val thumb: Int,
     SUNHAT(R.string.st_sunhat, R.drawable.thumb_acc_sunhat, 12f, 0xE8C88A, 0xFFD24D),
     BANDANA(R.string.st_bandana, R.drawable.thumb_acc_bandana, 13f, 0xF06A3A, 0xFFFFFF),
     SNORKEL(R.string.st_snorkel, R.drawable.thumb_acc_snorkel, 14f, 0xFF7FB3, 0x8FB8F0),
-    BACKPACK(R.string.st_backpack, R.drawable.thumb_acc_backpack, 15f, 0x4A90E2, 0x8FC1FF);
+    BACKPACK(R.string.st_backpack, R.drawable.thumb_acc_backpack, 15f, 0x4A90E2, 0x8FC1FF),
+    SAILOR(R.string.st_sailor, R.drawable.thumb_acc_sailor, 16f, 0x4A90E2, 0xFFD45A),
+    DUCKLING(R.string.st_duckling, R.drawable.thumb_acc_duckling, 17f, 0xFFD01A, 0xFF801F),
+    HEART(R.string.st_heart, R.drawable.thumb_acc_heart, 18f, 0xFF8FB0, 0xFFFFFF),
+    BATH(R.string.st_bath, R.drawable.thumb_acc_bath, 19f, 0xA8D8F0, 0xFFFFFF),
+    BOOKWORM(R.string.st_bookworm, R.drawable.thumb_acc_bookworm, 20f, 0x4A90E2, 0x8A6A45),
+    CLOUD(R.string.st_cloud, R.drawable.thumb_acc_cloud, 21f, 0xFFFFFF, 0xFFFFFF),
+    PARTY_BLUE(R.string.acc_party_blue, R.drawable.thumb_acc_party_blue, 3f, 0x4A90E2, 0xBFE0FF);
 
     val aRgb get() = rgb(a)
     val bRgb get() = rgb(b)
@@ -73,18 +80,6 @@ enum class DuckSkin(@StringRes val label: Int, @DrawableRes val thumb: Int, val 
     FLUFFY(R.string.skin_fluffy, R.drawable.thumb_skin_fluffy, DuckLook(DuckMaterial.FLUFFY, DuckColor.SUNNY)),
     COSTUME(R.string.skin_costume, R.drawable.thumb_skin_costume, DuckLook(DuckMaterial.GLOSSY, DuckColor.SAILOR, DuckAccessory.BEANIE)),
     PARTY(R.string.skin_party, R.drawable.thumb_skin_party, DuckLook(DuckMaterial.GLOSSY, DuckColor.SUNNY, DuckAccessory.PARTY)),
-    NIGHTCAP(R.string.acc_nightcap, R.drawable.thumb_acc_nightcap, DuckLook(accessory = DuckAccessory.NIGHTCAP)),
-    SPROUT(R.string.acc_sprout, R.drawable.thumb_acc_sprout, DuckLook(accessory = DuckAccessory.SPROUT)),
-    SHADES(R.string.acc_shades, R.drawable.thumb_acc_shades, DuckLook(accessory = DuckAccessory.SHADES)),
-    HEADPHONES(R.string.acc_headphones, R.drawable.thumb_acc_headphones, DuckLook(accessory = DuckAccessory.HEADPHONES)),
-    HERO(R.string.st_hero, R.drawable.thumb_acc_cape, DuckLook(accessory = DuckAccessory.CAPE)),
-    CAP(R.string.acc_cap, R.drawable.thumb_acc_cap, DuckLook(accessory = DuckAccessory.CAP)),
-    FROG(R.string.st_frog, R.drawable.thumb_acc_frog, DuckLook(accessory = DuckAccessory.FROG)),
-    BEAR(R.string.st_bear, R.drawable.thumb_acc_bear, DuckLook(accessory = DuckAccessory.BEAR)),
-    SUNHAT(R.string.st_sunhat, R.drawable.thumb_acc_sunhat, DuckLook(accessory = DuckAccessory.SUNHAT)),
-    BANDANA(R.string.st_bandana, R.drawable.thumb_acc_bandana, DuckLook(accessory = DuckAccessory.BANDANA)),
-    SNORKEL(R.string.st_snorkel, R.drawable.thumb_acc_snorkel, DuckLook(accessory = DuckAccessory.SNORKEL)),
-    BACKPACK(R.string.st_backpack, R.drawable.thumb_acc_backpack, DuckLook(accessory = DuckAccessory.BACKPACK)),
 }
 
 /** Picture ducks: a flat image that floats, hops and dozes like the 3D duck. */
