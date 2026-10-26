@@ -42,6 +42,25 @@ Apple only lets signed apps onto an iPhone. The simplest way without a Mac:
 5. The next build on `main` appears in TestFlight. Install the TestFlight app
    on the iPhone and accept the invite.
 
-Free alternative: sideload `Ducky-unsigned.ipa` with a free Apple ID using
-AltStore or Sideloadly from a Windows PC. Free installs expire after 7 days and
-need re-installing.
+### Free: AltStore (what Astra uses)
+
+Every build publishes `Ducky-unsigned.ipa` on the
+[Releases page](https://github.com/magnunopus7-cyber/reminder-ducky/releases)
+as "Ducky for iPhone 1.0.N".
+
+1. On the PC, install AltServer from altstore.io (on Windows it also asks for
+   iTunes and iCloud from Apple's website, not the Microsoft Store versions).
+2. Plug the iPhone into the PC with a cable, tap Trust on the phone.
+3. Click the AltServer icon (Windows: near the clock) → Install AltStore →
+   pick the iPhone → sign in with your Apple ID.
+4. On the iPhone: Settings → General → VPN & Device Management → trust your
+   Apple ID. If asked, turn on Settings → Privacy & Security → Developer Mode
+   and restart.
+5. On the iPhone, open the Releases page in Safari and download
+   `Ducky-unsigned.ipa` (it goes to Files → Downloads).
+6. Open AltStore → My Apps → + → pick the file. Ducky appears on the Home
+   Screen. Then add the widget (instructions are inside the app).
+
+Free installs last 7 days. AltStore renews them by itself when the iPhone and
+the PC (with AltServer running) are on the same Wi-Fi; or tap Refresh All in
+AltStore. AltStore also registers the App Group the widget needs.
