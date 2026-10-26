@@ -150,4 +150,67 @@
         <item>Quack quack! Well done 💛</item>
         <item>One down! I\'m so proud of you 🐥</item>
     </string-array>
+    <string name="label_tone">Tone</string>
+    <string name="tone_friendly">Friendly</string>
+    <string name="tone_zen">Zen</string>
+    <string name="tone_mean">Mean</string>
+    <string name="tone_boss">Boss report</string>
+    <string-array name="talk_one_zen">
+        <item>Breathe in. Breathe out. Now, “%1$s”. 🪷</item>
+        <item>The river does not hurry, yet “%1$s” will be done. 🍃</item>
+        <item>One task, one moment: “%1$s”. 🙏</item>
+    </string-array>
+    <string-array name="talk_many_zen">
+        <item>%1$d things await, like leaves on the water. Begin with “%2$s”. 🍃</item>
+        <item>A journey of %1$d steps begins with “%2$s”. 🪷</item>
+        <item>Do not carry all %1$d at once. Just “%2$s”, gently. 🙏</item>
+    </string-array>
+    <string-array name="talk_none_zen">
+        <item>Nothing to do. Simply be. 🪷</item>
+        <item>An empty list is a peaceful mind. 🍃</item>
+    </string-array>
+    <string-array name="talk_praise_zen">
+        <item>Well done. Let it go. 🍃</item>
+        <item>Another step on the path. 🙏</item>
+        <item>Released, like a breath. 🪷</item>
+    </string-array>
+    <string-array name="talk_one_mean">
+        <item>Seriously? “%1$s” is STILL not done? 🙄</item>
+        <item>Wow. “%1$s” is just sitting there. Like you. 😒</item>
+        <item>Do “%1$s” already. I\'m not asking twice. 😤</item>
+    </string-array>
+    <string-array name="talk_many_mean">
+        <item>%1$d things left?! What have you even been doing? 🙄</item>
+        <item>Ugh, %1$d tasks. Start with “%2$s”, slowpoke. 😒</item>
+        <item>“%2$s” isn\'t going to do itself, genius. %1$d to go. 😤</item>
+    </string-array>
+    <string-array name="talk_none_mean">
+        <item>Nothing left? Huh. Didn\'t think you had it in you. 😏</item>
+        <item>Empty list. Don\'t let it go to your head. 🙄</item>
+    </string-array>
+    <string-array name="talk_praise_mean">
+        <item>Finally. Took you long enough. 😒</item>
+        <item>Fine, that one\'s done. Don\'t get cocky. 😏</item>
+        <item>Wow, a miracle. 🙄</item>
+    </string-array>
+    <string-array name="talk_one_boss">
+        <item>Boss, one item pending: “%1$s”. Awaiting your action. 📋</item>
+        <item>Status report, Boss: “%1$s” remains open. 🗂️</item>
+        <item>Boss, a reminder: “%1$s” is on today\'s agenda. 📌</item>
+    </string-array>
+    <string-array name="talk_many_boss">
+        <item>Boss, %1$d items on today\'s agenda. I recommend starting with “%2$s”. 📋</item>
+        <item>Briefing: %1$d tasks pending. Priority one is “%2$s”. 🗂️</item>
+        <item>Boss, %1$d open items. Shall I put “%2$s” at the top? 📌</item>
+    </string-array>
+    <string-array name="talk_none_boss">
+        <item>Boss, all items are cleared. Excellent work today. 📋</item>
+        <item>Report: no pending tasks. Your schedule is clear, Boss. 🗂️</item>
+    </string-array>
+    <string-array name="talk_praise_boss">
+        <item>Noted, Boss. Item closed. ✅</item>
+        <item>Excellent decision, Boss. Marked as done. 📋</item>
+        <item>Report updated: one item fewer, Boss. 🗂️</item>
+    </string-array>
+    <string name="tone_sample_task">Water the plants</string>
 </resources>

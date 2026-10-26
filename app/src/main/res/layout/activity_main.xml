@@ -465,6 +465,47 @@
                         </LinearLayout>
 
                         <LinearLayout
+                            android:id="@+id/toneHead"
+                            style="@style/FoldHeader"
+                            android:layout_marginTop="4dp">
+
+                            <TextView
+                                style="@style/FieldLabel"
+                                android:layout_width="0dp"
+                                android:layout_marginTop="0dp"
+                                android:layout_weight="1"
+                                android:text="@string/label_tone" />
+
+                            <TextView
+                                android:id="@+id/toneValue"
+                                style="@style/FoldValue" />
+
+                            <ImageView
+                                android:id="@+id/toneChevron"
+                                style="@style/FoldChevron" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/toneBody"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <com.google.android.material.chip.ChipGroup
+                                android:id="@+id/toneGroup"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:selectionRequired="true"
+                                app:singleSelection="true" />
+
+                            <!-- A sample of how Ducky talks in the chosen tone. -->
+                            <TextView
+                                android:id="@+id/toneSample"
+                                style="@style/SectionSub"
+                                android:layout_marginTop="4dp" />
+                        </LinearLayout>
+
+                        <LinearLayout
                             android:id="@+id/sizeHead"
                             style="@style/FoldHeader"
                             android:layout_marginTop="4dp">

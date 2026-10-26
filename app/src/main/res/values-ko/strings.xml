@@ -150,4 +150,67 @@
         <item>꽥꽥! 최고야 💛</item>
         <item>하나 끝! 정말 멋져 🐥</item>
     </string-array>
+    <string name="label_tone">말투</string>
+    <string name="tone_friendly">친구</string>
+    <string name="tone_zen">스님</string>
+    <string name="tone_mean">얄미운</string>
+    <string name="tone_boss">대표님 보고</string>
+    <string-array name="talk_one_zen">
+        <item>숨을 들이쉬고, 내쉬고… 이제 “%1$s” 하시게나. 🪷</item>
+        <item>물은 서두르지 않아도 바다에 닿는다네. “%1$s”도 그러하리. 🍃</item>
+        <item>지금 이 순간, “%1$s” 하나만 보시게. 🙏</item>
+    </string-array>
+    <string-array name="talk_many_zen">
+        <item>할 일 %1$d개가 물 위의 낙엽 같구려. “%2$s”부터 시작하시게. 🍃</item>
+        <item>천 리 길도 한 걸음부터. “%2$s”부터 하시게나. 🪷</item>
+        <item>%1$d개를 한꺼번에 짊어지지 마시게. “%2$s” 하나만, 천천히. 🙏</item>
+    </string-array>
+    <string-array name="talk_none_zen">
+        <item>할 일이 없구려. 그저 머무르시게. 🪷</item>
+        <item>비어 있는 목록이 고요한 마음이라네. 🍃</item>
+    </string-array>
+    <string-array name="talk_praise_zen">
+        <item>잘하셨소. 이제 내려놓으시게. 🍃</item>
+        <item>또 한 걸음 나아갔구려. 🙏</item>
+        <item>숨처럼 가볍게 놓아주었구려. 🪷</item>
+    </string-array>
+    <string-array name="talk_one_mean">
+        <item>진짜? “%1$s” 아직도 안 했어? 🙄</item>
+        <item>“%1$s” 그대로 있네. 너처럼. 😒</item>
+        <item>“%1$s” 빨리 해. 두 번 말 안 한다. 😤</item>
+    </string-array>
+    <string-array name="talk_many_mean">
+        <item>할 일이 %1$d개나 남았어?! 대체 뭐 한 거야? 🙄</item>
+        <item>으, %1$d개. “%2$s”부터 해, 느림보야. 😒</item>
+        <item>“%2$s” 저절로 될 줄 알았어? 아직 %1$d개야. 😤</item>
+    </string-array>
+    <string-array name="talk_none_mean">
+        <item>다 했어? 웬일이래. 😏</item>
+        <item>목록이 비었네. 우쭐대지 마. 🙄</item>
+    </string-array>
+    <string-array name="talk_praise_mean">
+        <item>드디어. 오래도 걸렸다. 😒</item>
+        <item>그래, 하나 했네. 잘난 척은 하지 마. 😏</item>
+        <item>와, 기적이다. 🙄</item>
+    </string-array>
+    <string-array name="talk_one_boss">
+        <item>대표님, 미결 사항 1건 보고드립니다: “%1$s”. 📋</item>
+        <item>현황 보고드립니다. “%1$s” 건이 아직 남아 있습니다, 대표님. 🗂️</item>
+        <item>대표님, 오늘 일정에 “%1$s” 건이 있습니다. 확인 부탁드립니다. 📌</item>
+    </string-array>
+    <string-array name="talk_many_boss">
+        <item>대표님, 오늘 처리할 안건이 %1$d건입니다. “%2$s” 건부터 진행하시길 권해드립니다. 📋</item>
+        <item>오늘의 브리핑입니다. 미결 %1$d건, 최우선은 “%2$s” 건입니다. 🗂️</item>
+        <item>대표님, 남은 안건 %1$d건입니다. “%2$s” 건을 맨 위에 올려둘까요? 📌</item>
+    </string-array>
+    <string-array name="talk_none_boss">
+        <item>대표님, 모든 안건 처리 완료되었습니다. 수고 많으셨습니다. 📋</item>
+        <item>보고드립니다. 미결 사항 없습니다. 일정이 비어 있습니다, 대표님. 🗂️</item>
+    </string-array>
+    <string-array name="talk_praise_boss">
+        <item>확인했습니다, 대표님. 완료 처리하겠습니다. ✅</item>
+        <item>탁월한 결정이십니다. 완료로 기록했습니다. 📋</item>
+        <item>보고서 갱신했습니다. 1건 줄었습니다, 대표님. 🗂️</item>
+    </string-array>
+    <string name="tone_sample_task">화분에 물 주기</string>
 </resources>

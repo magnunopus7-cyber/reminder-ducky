@@ -374,11 +374,12 @@ class DuckService : Service() {
         val store = TodoStore(this)
         val open = store.all().filter { !it.done }
         val themed = ContextThemeWrapper(this, R.style.Theme_ReminderDucky)
+        val tone = prefs.tone
         val talk = TextView(themed).apply {
             text = when (open.size) {
-                0 -> resources.getStringArray(R.array.talk_none).random()
-                1 -> resources.getStringArray(R.array.talk_one).random().format(open[0].text)
-                else -> resources.getStringArray(R.array.talk_many).random().format(open.size, open[0].text)
+                0 -> resources.getStringArray(tone.none).random()
+                1 -> resources.getStringArray(tone.one).random().format(open[0].text)
+                else -> resources.getStringArray(tone.many).random().format(open.size, open[0].text)
             }
             textSize = 16f
             setTextColor(ContextCompat.getColor(this@DuckService, R.color.ink))
@@ -396,7 +397,7 @@ class DuckService : Service() {
                     store.save(t.copy(done = true))
                     duckView?.renderer?.react(Mood.HAPPY, 1.8f)
                     if (prefs.tapQuack) Quack.play(this@DuckService, 0.5f)
-                    talk.text = resources.getStringArray(R.array.talk_praise).random()
+                    talk.text = resources.getStringArray(tone.praise).random()
                     paintFlags = paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
                     isEnabled = false
                 }

@@ -31,6 +31,10 @@ class Prefs(context: Context) {
     fun isOpen(section: String, default: Boolean) = sp.getBoolean("open_$section", default)
     fun setOpen(section: String, open: Boolean) = sp.edit().putBoolean("open_$section", open).apply()
 
+    var tone: Tone
+        get() = enumOr(sp.getString("tone", null), Tone.FRIENDLY)
+        set(v) = sp.edit().putString("tone", v.name).apply()
+
     var size: DuckSize
         get() = enumOr(sp.getString("size", null), DuckSize.MEDIUM)
         set(v) = sp.edit().putString("size", v.name).apply()

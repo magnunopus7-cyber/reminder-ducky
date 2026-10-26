@@ -293,7 +293,7 @@ class MainActivity : AppCompatActivity() {
         foldable("todoCard", true)
         foldable("skinsCard", false)
         foldable("customizeCard", false)
-        for (key in listOf("material", "accessory", "size", "language")) foldable(key, false)
+        for (key in listOf("material", "accessory", "tone", "size", "language")) foldable(key, false)
     }
 
     // ---- Picture options ----
@@ -392,6 +392,19 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // Tone: how Ducky talks about your to-dos in its bubble.
+        val toneGroup = findViewById<ChipGroup>(R.id.toneGroup)
+        for (t in Tone.entries) {
+            val chip = filterChip(getString(t.label)).also { toneGroup.addView(it) }
+            if (t == prefs.tone) toneGroup.check(chip.id)
+            chip.setOnClickListener {
+                prefs.tone = t
+                if (prefs.tapQuack) Quack.play(this, 0.5f)
+                preview.renderer.react(Mood.HAPPY, 1.2f)
+                syncCustomizer()
+            }
+        }
+
         // Language: English or Korean just for Ducky. Until one is picked, the phone's language is used.
         val languageGroup = findViewById<ChipGroup>(R.id.languageGroup)
         val languages = listOf("en" to "English", "ko" to "한국어")
@@ -430,6 +443,10 @@ class MainActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.materialValue).setText(look.material.label)
         findViewById<TextView>(R.id.accessoryValue).setText(look.accessory.label)
         findViewById<TextView>(R.id.sizeValue).setText(prefs.size.label)
+        val tone = prefs.tone
+        findViewById<TextView>(R.id.toneValue).setText(tone.label)
+        findViewById<TextView>(R.id.toneSample).text =
+            resources.getStringArray(tone.many)[0].format(3, getString(R.string.tone_sample_task))
     }
 
     // ---- Reminders ----
