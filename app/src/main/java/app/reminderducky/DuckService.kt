@@ -347,16 +347,27 @@ class DuckService : Service() {
         // Long-press any icon to see what it does.
         listOf(R.id.menuDone, R.id.menuSnooze, R.id.menuAdd, R.id.menuTodo, R.id.menuSettings)
             .forEach { id -> v.findViewById<View>(id).let { it.tooltipText = it.contentDescription } }
-        v.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-        var width = v.measuredWidth
-        if (fillTodos(v)) width = maxOf(width, min(dp(300), screenSize().x - dp(8)))
+        v.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+        v.background = SpeechBubbleDrawable(
+            fill = ContextCompat.getColor(this, R.color.card),
+            outline = ContextCompat.getColor(this, R.color.bubble_outline),
+            radius = dp(32).toFloat(), tail = dp(BUBBLE_TAIL).toFloat(),
+            shadow = dp(5).toFloat(), strokeWidth = dp(2.5f),
+        )
+        val hasTodos = fillTodos(v)
+        val icons = v.findViewById<View>(R.id.menuContent)
+        icons.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+        // Room for the outline, shadow and tail around the content.
+        val frame = dp(20) + 2 * dp(8) + dp(BUBBLE_TAIL)
+        var width = icons.measuredWidth + frame
+        if (hasTodos) width = maxOf(width, dp(300))
         val p = overlayParams(
-            width, WindowManager.LayoutParams.WRAP_CONTENT,
+            min(width, screenSize().x - dp(8)), WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
         )
-        wm.addView(v, p)
         menuView = v
-        positionMenu()
+        layoutMenu(p)
+        wm.addView(v, p)
         // Re-centre once the real height is known.
         v.post { positionMenu() }
     }
@@ -369,6 +380,15 @@ class DuckService : Service() {
         val open = store.all().filter { !it.done }
         box.visibility = if (open.isEmpty()) View.GONE else View.VISIBLE
         val themed = ContextThemeWrapper(this, R.style.Theme_ReminderDucky)
+        if (open.isNotEmpty()) {
+            box.addView(TextView(themed).apply {
+                setText(R.string.todo_title)
+                textSize = 15f
+                setTypeface(typeface, android.graphics.Typeface.BOLD)
+                setTextColor(ContextCompat.getColor(this@DuckService, R.color.ink))
+                setPadding(dp(6), dp(2), 0, dp(2))
+            })
+        }
         for (t in open.take(MENU_TODOS)) {
             box.addView(com.google.android.material.checkbox.MaterialCheckBox(themed).apply {
                 text = t.text
@@ -415,19 +435,40 @@ class DuckService : Service() {
     private fun positionMenu() {
         val v = menuView ?: return
         val p = v.layoutParams as WindowManager.LayoutParams
+        layoutMenu(p)
+        runCatching { wm.updateViewLayout(v, p) }
+    }
+
+    /** Places the menu bubble beside Ducky (or below a very big duck) with its tail pointing at the duck. */
+    private fun layoutMenu(p: WindowManager.LayoutParams) {
+        val v = menuView ?: return
         val screen = screenSize()
         val duckOnLeft = duckParams.x + duckParams.width / 2 < screen.x / 2
+        val bubble = v.background as? SpeechBubbleDrawable
+        val tail = dp(BUBBLE_TAIL)
+        val shadow = dp(8)
+        val content = v.findViewById<View>(R.id.menuContent)
         if (screen.x - duckParams.width < p.width) {
             // No room beside a very big duck: sit just below it.
             p.x = (duckParams.x + duckParams.width / 2 - p.width / 2).coerceIn(0, maxOf(0, screen.x - p.width))
-            p.y = (duckParams.y + duckParams.height - dp(8)).coerceIn(0, maxOf(0, screen.y - dp(80)))
+            p.y = (duckParams.y + duckParams.height - dp(12)).coerceIn(0, maxOf(0, screen.y - dp(120)))
+            bubble?.tailOnTop = true
+            bubble?.tailX = (duckParams.x + duckParams.width / 2 - p.x).toFloat()
+            content.setPadding(dp(10) + shadow, dp(8) + shadow + tail, dp(10) + shadow, dp(4) + shadow)
         } else {
             p.x = if (duckOnLeft) duckParams.x + duckParams.width else duckParams.x - p.width
             p.x = p.x.coerceIn(0, maxOf(0, screen.x - p.width))
-            val h = v.height.takeIf { it > 0 } ?: dp(76)
+            val h = v.height.takeIf { it > 0 } ?: dp(90)
             p.y = (duckParams.y + (duckParams.height - h) / 2).coerceIn(0, maxOf(0, screen.y - h))
+            bubble?.tailOnTop = false
+            bubble?.tailOnLeft = duckOnLeft
+            bubble?.tailY = duckParams.y + duckParams.height * 0.4f - p.y
+            val edge = shadow + tail
+            content.setPadding(
+                dp(10) + if (duckOnLeft) edge else shadow, dp(8) + shadow,
+                dp(10) + if (duckOnLeft) shadow else edge, dp(4) + shadow
+            )
         }
-        runCatching { wm.updateViewLayout(v, p) }
     }
 
     // ---- Alerts ----
