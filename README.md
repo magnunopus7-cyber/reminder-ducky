@@ -27,3 +27,7 @@ Some phones (especially Samsung, Xiaomi, Huawei, OnePlus) close background apps 
 ## Building it yourself
 
 Every push to `main` is built by GitHub Actions (`.github/workflows/build.yml`) and published as a release. To build locally you need Android Studio or the Android SDK with JDK 17, then run `./gradlew assembleRelease`.
+
+## iPhone
+
+An iPhone version with a Home Screen widget lives in [`ios/`](ios/README.md).

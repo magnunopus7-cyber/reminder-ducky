@@ -1,0 +1,72 @@
+# Generates Ducky.xcodeproj with XcodeGen (the cloud build runs `xcodegen` first).
+name: Ducky
+options:
+  bundleIdPrefix: app.reminderducky
+  deploymentTarget:
+    iOS: "17.0"
+  developmentLanguage: en
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    CODE_SIGN_STYLE: Automatic
+    TARGETED_DEVICE_FAMILY: "1"
+targets:
+  Ducky:
+    type: application
+    platform: iOS
+    sources:
+      - path: App
+      - path: Shared
+      # The 3D duck and its picture thumbnails are shared with the Android app.
+      - path: ../app/src/main/assets/duck.frag
+        buildPhase: resources
+      - path: ../app/src/main/res/drawable-nodpi
+        buildPhase: resources
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleDisplayName: Ducky
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        CFBundleLocalizations: [en, ko]
+        CFBundleURLTypes:
+          - CFBundleURLSchemes: [ducky]
+        UILaunchScreen:
+          UIColorName: ""
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        ITSAppUsesNonExemptEncryption: false
+        NSSupportsLiveActivities: true
+    entitlements:
+      path: App/Ducky.entitlements
+      properties:
+        com.apple.security.application-groups: [group.app.reminderducky]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.reminderducky
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    dependencies:
+      - target: DuckyWidget
+    scheme: {}
+  DuckyWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: Widget
+      - path: Shared
+    info:
+      path: Widget/Info.plist
+      properties:
+        CFBundleDisplayName: Ducky
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    entitlements:
+      path: Widget/DuckyWidget.entitlements
+      properties:
+        com.apple.security.application-groups: [group.app.reminderducky]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.reminderducky.widget
