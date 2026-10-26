@@ -11,6 +11,9 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      UPLOAD_KEYSTORE_B64: ${{ secrets.UPLOAD_KEYSTORE_B64 }}
+      UPLOAD_KEY_PASSWORD: ${{ secrets.UPLOAD_KEY_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
 
@@ -32,6 +35,15 @@ jobs:
           name: ReminderDucky
           path: ReminderDucky.apk
 
+      # The Google Play bundle, signed with the private upload key. Skipped until
+      # the UPLOAD_KEYSTORE_B64 and UPLOAD_KEY_PASSWORD secrets are added.
+      - name: Build the Google Play bundle
+        if: env.UPLOAD_KEYSTORE_B64 != ''
+        run: |
+          echo "$UPLOAD_KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/upload.p12"
+          UPLOAD_KEYSTORE_FILE="$RUNNER_TEMP/upload.p12" ./gradlew bundleRelease -PversionCode=${{ github.run_number }}
+          cp app/build/outputs/bundle/release/app-release.aab ReminderDucky-GooglePlay.aab
+
       - name: Publish as a downloadable release
         uses: softprops/action-gh-release@v2
         with:
@@ -39,6 +51,10 @@ jobs:
           name: Reminder Ducky 1.0.${{ github.run_number }}
           body: |
             Download **ReminderDucky.apk** below on your Android phone and open it to install or update.
+            **ReminderDucky-GooglePlay.aab** (when present) is the file to upload to Google Play Console.
             Built from commit ${{ github.sha }}.
-          files: ReminderDucky.apk
+          files: |
+            ReminderDucky.apk
+            ReminderDucky-GooglePlay.aab
+          fail_on_unmatched_files: false
           make_latest: true

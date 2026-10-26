@@ -25,12 +25,24 @@ android {
             keyAlias = "androiddebugkey"
             keyPassword = "android"
         }
+        // The private upload key for Google Play. It never goes in the repo: CI
+        // writes it from the UPLOAD_KEYSTORE_B64 and UPLOAD_KEY_PASSWORD secrets.
+        val uploadStore = System.getenv("UPLOAD_KEYSTORE_FILE")
+        if (uploadStore != null) {
+            create("upload") {
+                storeFile = file(uploadStore)
+                storePassword = System.getenv("UPLOAD_KEY_PASSWORD")
+                keyAlias = "upload"
+                keyPassword = System.getenv("UPLOAD_KEY_PASSWORD")
+            }
+        }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("debug")
+            // Play builds use the upload key; the APK for direct installs keeps the repo key.
+            signingConfig = signingConfigs.findByName("upload") ?: signingConfigs.getByName("debug")
         }
     }
 

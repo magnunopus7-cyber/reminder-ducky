@@ -553,13 +553,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     @SuppressLint("BatteryLife")
+    /** Opens the battery list, where Ducky can be set to "not optimised" so reminders aren't delayed. */
     private fun askIgnoreBatteryOptimizations() {
-        val direct = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:$packageName"))
-        try {
-            startActivity(direct)
-        } catch (e: Exception) {
-            startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
-        }
+        startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
     }
 
     companion object {
