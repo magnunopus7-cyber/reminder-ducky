@@ -354,15 +354,9 @@ class DuckService : Service() {
             radius = dp(32).toFloat(), tail = dp(BUBBLE_TAIL).toFloat(),
             shadow = dp(5).toFloat(), strokeWidth = dp(2.5f),
         )
-        val hasTodos = fillTodos(v)
-        val icons = v.findViewById<View>(R.id.menuContent)
-        icons.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-        // Room for the outline, shadow and tail around the content.
-        val frame = dp(20) + 2 * dp(8) + dp(BUBBLE_TAIL)
-        var width = icons.measuredWidth + frame
-        if (hasTodos) width = maxOf(width, dp(300))
+        fillTodos(v)
         val p = overlayParams(
-            min(width, screenSize().x - dp(8)), WindowManager.LayoutParams.WRAP_CONTENT,
+            dp(MENU_WIDTH), WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
         )
         menuView = v
@@ -372,34 +366,37 @@ class DuckService : Service() {
         v.post { positionMenu() }
     }
 
-    /** Lists open to-dos at the top of the menu. Returns whether there were any. */
-    private fun fillTodos(menu: View): Boolean {
+    /** Ducky chats about the open to-dos, which can be ticked right here. */
+    private fun fillTodos(menu: View) {
         val box = menu.findViewById<android.widget.LinearLayout>(R.id.menuTodos)
         box.removeAllViews()
+        box.visibility = View.VISIBLE
         val store = TodoStore(this)
         val open = store.all().filter { !it.done }
-        box.visibility = if (open.isEmpty()) View.GONE else View.VISIBLE
         val themed = ContextThemeWrapper(this, R.style.Theme_ReminderDucky)
-        if (open.isNotEmpty()) {
-            box.addView(TextView(themed).apply {
-                setText(R.string.todo_title)
-                textSize = 15f
-                setTypeface(typeface, android.graphics.Typeface.BOLD)
-                setTextColor(ContextCompat.getColor(this@DuckService, R.color.ink))
-                setPadding(dp(6), dp(2), 0, dp(2))
-            })
+        val talk = TextView(themed).apply {
+            text = when (open.size) {
+                0 -> resources.getStringArray(R.array.talk_none).random()
+                1 -> resources.getStringArray(R.array.talk_one).random().format(open[0].text)
+                else -> resources.getStringArray(R.array.talk_many).random().format(open.size, open[0].text)
+            }
+            textSize = 16f
+            setTextColor(ContextCompat.getColor(this@DuckService, R.color.ink))
+            setPadding(dp(6), dp(2), dp(4), dp(4))
         }
+        box.addView(talk)
         for (t in open.take(MENU_TODOS)) {
             box.addView(com.google.android.material.checkbox.MaterialCheckBox(themed).apply {
                 text = t.text
                 textSize = 15f
                 maxLines = 2
-                setTextColor(ContextCompat.getColor(this@DuckService, R.color.ink))
+                setTextColor(ContextCompat.getColor(this@DuckService, R.color.ink_soft))
                 setOnCheckedChangeListener { _, checked ->
                     if (!checked) return@setOnCheckedChangeListener
                     store.save(t.copy(done = true))
                     duckView?.renderer?.react(Mood.HAPPY, 1.8f)
                     if (prefs.tapQuack) Quack.play(this@DuckService, 0.5f)
+                    talk.text = resources.getStringArray(R.array.talk_praise).random()
                     paintFlags = paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
                     isEnabled = false
                 }
@@ -413,7 +410,6 @@ class DuckService : Service() {
                 setOnClickListener { openApp(MainActivity.ACTION_TODO) }
             })
         }
-        return open.isNotEmpty()
     }
 
     private fun hideMenu() {
@@ -448,14 +444,17 @@ class DuckService : Service() {
         val tail = dp(BUBBLE_TAIL)
         val shadow = dp(8)
         val content = v.findViewById<View>(R.id.menuContent)
-        if (screen.x - duckParams.width < p.width) {
-            // No room beside a very big duck: sit just below it.
+        val besideRoom = screen.x - duckParams.width
+        if (besideRoom < dp(MENU_MIN_WIDTH)) {
+            // No room beside a big duck: sit just below it.
+            p.width = min(dp(MENU_WIDTH), screen.x - dp(16))
             p.x = (duckParams.x + duckParams.width / 2 - p.width / 2).coerceIn(0, maxOf(0, screen.x - p.width))
             p.y = (duckParams.y + duckParams.height - dp(12)).coerceIn(0, maxOf(0, screen.y - dp(120)))
             bubble?.tailOnTop = true
             bubble?.tailX = (duckParams.x + duckParams.width / 2 - p.x).toFloat()
             content.setPadding(dp(10) + shadow, dp(8) + shadow + tail, dp(10) + shadow, dp(4) + shadow)
         } else {
+            p.width = min(dp(MENU_WIDTH), besideRoom)
             p.x = if (duckOnLeft) duckParams.x + duckParams.width else duckParams.x - p.width
             p.x = p.x.coerceIn(0, maxOf(0, screen.x - p.width))
             val h = v.height.takeIf { it > 0 } ?: dp(90)
@@ -603,6 +602,9 @@ class DuckService : Service() {
 
     companion object {
         const val ACTION_ALERT = "app.reminderducky.ALERT"
+        /** Menu bubble width: room for Ducky's words and five icons, plus outline, shadow and tail. */
+        private const val MENU_WIDTH = 330
+        private const val MENU_MIN_WIDTH = 270
         private const val FG_ID = 1
         private const val WOBBLE_MILLIS = 20_000L
         private const val BUBBLE_TAIL = 22

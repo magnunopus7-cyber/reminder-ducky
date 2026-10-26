@@ -130,4 +130,24 @@
     <string name="acc_cap">모자</string>
     <string name="acc_party_blue">파란 고깔모자</string>
     <string name="more_options">더 보기</string>
+    <!-- 덕희가 친구처럼 말해요. -->
+    <string-array name="talk_one">
+        <item>친구야! “%1$s” 잊지 마 💛</item>
+        <item>있잖아… “%1$s” 아직 남았어 🐥</item>
+        <item>할 수 있어! “%1$s”만 하면 돼 ✨</item>
+    </string-array>
+    <string-array name="talk_many">
+        <item>오늘 할 일이 %1$d개 있어. “%2$s”부터 해볼까? 💪</item>
+        <item>할 일 %1$d개 남았어. 같이 하나씩 해보자 🐥</item>
+        <item>안녕! 먼저 “%2$s” 하자. 내가 응원할게 📣</item>
+    </string-array>
+    <string-array name="talk_none">
+        <item>지금은 할 일 없어! 정말 대단해 ✨</item>
+        <item>할 일 목록이 비었어. 잠깐 쉬어 갈까? ☕</item>
+    </string-array>
+    <string-array name="talk_praise">
+        <item>와, 잘했어! 🎉</item>
+        <item>꽥꽥! 최고야 💛</item>
+        <item>하나 끝! 정말 멋져 🐥</item>
+    </string-array>
 </resources>

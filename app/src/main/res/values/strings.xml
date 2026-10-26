@@ -130,4 +130,24 @@
     <string name="acc_cap">Cap</string>
     <string name="acc_party_blue">Blue party hat</string>
     <string name="more_options">More options</string>
+    <!-- Ducky talks like a friend in the tap bubble. -->
+    <string-array name="talk_one">
+        <item>Hey friend! Don\'t forget “%1$s” 💛</item>
+        <item>Psst… “%1$s” is still waiting for you 🐥</item>
+        <item>You\'ve got this! Just “%1$s” left ✨</item>
+    </string-array>
+    <string-array name="talk_many">
+        <item>You have %1$d things to do. Shall we start with “%2$s”? 💪</item>
+        <item>%1$d little tasks left. Let\'s do them together, one by one 🐥</item>
+        <item>Hi! First up: “%2$s”. I\'ll cheer you on 📣</item>
+    </string-array>
+    <string-array name="talk_none">
+        <item>All done for now! You\'re amazing ✨</item>
+        <item>Nothing on the list. Time for a little break? ☕</item>
+    </string-array>
+    <string-array name="talk_praise">
+        <item>Yay, nice work! 🎉</item>
+        <item>Quack quack! Well done 💛</item>
+        <item>One down! I\'m so proud of you 🐥</item>
+    </string-array>
 </resources>
