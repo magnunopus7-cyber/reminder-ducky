@@ -345,17 +345,12 @@ class MainActivity : AppCompatActivity() {
         holder.removeView(scroll)
         val frame = FrameLayout(this)
         frame.addView(scroll)
-        val plus = TextView(this).apply {
-            text = "+"
-            textSize = 20f
-            gravity = Gravity.CENTER
-            setTextColor(Color.WHITE)
-            setBackgroundResource(R.drawable.more_hint)
-            elevation = dp(3).toFloat()
+        val plus = ImageView(this).apply {
+            setImageResource(R.drawable.ic_more_plus)
             contentDescription = getString(R.string.more_options)
             setOnClickListener { scroll.smoothScrollBy(dp(200), 0) }
         }
-        frame.addView(plus, FrameLayout.LayoutParams(dp(32), dp(32), Gravity.END or Gravity.CENTER_VERTICAL))
+        frame.addView(plus, FrameLayout.LayoutParams(dp(38), dp(38), Gravity.END or Gravity.CENTER_VERTICAL))
         holder.addView(frame, index, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
         fun update() {
             plus.visibility = if (scroll.canScrollHorizontally(1)) View.VISIBLE else View.GONE
@@ -371,15 +366,9 @@ class MainActivity : AppCompatActivity() {
     private fun showFew(row: ViewGroup, cards: List<MaterialCardView>, chosen: () -> MaterialCardView?) {
         var open = false
         val holder = FrameLayout(this)
-        val plus = TextView(this).apply {
-            textSize = 20f
-            gravity = Gravity.CENTER
-            setTextColor(Color.WHITE)
-            setBackgroundResource(R.drawable.more_hint)
-            elevation = dp(3).toFloat()
-        }
-        holder.addView(plus, FrameLayout.LayoutParams(dp(36), dp(36), Gravity.CENTER))
-        row.addView(holder, ViewGroup.MarginLayoutParams(dp(40), dp(40)).apply { topMargin = dp(4); marginStart = dp(2) })
+        val plus = ImageView(this)
+        holder.addView(plus, FrameLayout.LayoutParams(dp(40), dp(40), Gravity.CENTER))
+        row.addView(holder, ViewGroup.MarginLayoutParams(dp(44), dp(44)).apply { topMargin = dp(4); marginStart = dp(2) })
         var step = 0
         var cardHeight = 0
         fun apply() {
@@ -393,7 +382,7 @@ class MainActivity : AppCompatActivity() {
             val fit = ((row.width - row.paddingStart - row.paddingEnd - dp(52)) / step).coerceAtLeast(1)
             holder.visibility = if (cards.size > fit || open) View.VISIBLE else View.GONE
             (holder.layoutParams as ViewGroup.MarginLayoutParams).height = cardHeight
-            plus.text = if (open) "−" else "+"
+            plus.setImageResource(if (open) R.drawable.ic_more_minus else R.drawable.ic_more_plus)
             plus.contentDescription = getString(if (open) R.string.fewer_options else R.string.more_options)
             val pick = chosen()
             val pickAt = cards.indexOf(pick)
