@@ -26,10 +26,12 @@ enum PreviewMode {
             (.systemSmall, CGSize(width: 170, height: 170), "small"),
             (.systemMedium, CGSize(width: 364, height: 170), "medium"),
             (.systemLarge, CGSize(width: 364, height: 382), "large"),
+            (.accessoryRectangular, CGSize(width: 172, height: 76), "lock_rect"),
+            (.accessoryCircular, CGSize(width: 76, height: 76), "lock_circle"),
         ]
         for (family, size, name) in sizes {
             let view = DuckWidgetView(entry: entry, family: family)
-                .padding(16)
+                .padding(name.hasPrefix("lock") ? 4 : 16)
                 .frame(width: size.width, height: size.height)
                 .background(DuckTheme.sky)
                 .clipShape(RoundedRectangle(cornerRadius: 22))

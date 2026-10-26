@@ -175,7 +175,7 @@ struct DuckWidgetView: View {
 
     private var rectangular: some View {
         HStack(spacing: 4) {
-            Text("🦆").font(.title3)
+            DuckImageView(mood: entry.mood).frame(width: 46, height: 46)
             VStack(alignment: .leading, spacing: 0) {
                 if let first = entry.items.first {
                     Text(first.text).font(.headline).lineLimit(1)
@@ -191,16 +191,16 @@ struct DuckWidgetView: View {
     @ViewBuilder
     private var inline: some View {
         if let first = entry.items.first {
-            Text("🦆 \(first.text) · \(first.due ? L("due_now") : friendlyTime(first.date))")
+            Text("\(L("widget_name")) · \(first.text) · \(first.due ? L("due_now") : friendlyTime(first.date))")
         } else {
-            Text("🦆 " + L("widget_none"))
+            Text(L("widget_name") + " · " + L("widget_none"))
         }
     }
 
     private var circular: some View {
         ZStack {
             AccessoryWidgetBackground()
-            Text(entry.mood == .sleepy ? "💤" : "🦆").font(.title2)
+            DuckImageView(mood: entry.mood).padding(3)
         }
     }
 }
