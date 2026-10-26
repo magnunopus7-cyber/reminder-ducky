@@ -73,11 +73,12 @@ object ReminderActions {
             context, 0, Intent(context, MainActivity::class.java),
             PendingIntent.FLAG_IMMUTABLE
         )
+        val line = Prefs(context).tone.alertLine(context, r.id, r.text)
         val n = NotificationCompat.Builder(context, DuckApp.CHANNEL_REMINDERS)
             .setSmallIcon(R.drawable.ic_stat_duck)
             .setContentTitle(context.getString(R.string.notif_title, r.icon))
-            .setContentText(r.text)
-            .setStyle(NotificationCompat.BigTextStyle().bigText(r.text))
+            .setContentText(line)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(line))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_REMINDER)
             .setContentIntent(open)

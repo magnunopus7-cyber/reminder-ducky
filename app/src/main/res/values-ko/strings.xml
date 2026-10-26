@@ -213,4 +213,24 @@
         <item>보고서 갱신했습니다. 1건 줄었습니다, 대표님. 🗂️</item>
     </string-array>
     <string name="tone_sample_task">화분에 물 주기</string>
+    <string-array name="alert_friendly">
+        <item>시간 됐어! “%1$s” 💛</item>
+        <item>친구야, “%1$s” 할 시간이야! 🐥</item>
+        <item>꽥! “%1$s” 잊지 마 ✨</item>
+    </string-array>
+    <string-array name="alert_zen">
+        <item>때가 되었구려. “%1$s” 하시게. 🪷</item>
+        <item>숨을 고르고, “%1$s”에 마음을 두시게. 🍃</item>
+        <item>지금이 “%1$s” 할 때라네. 🙏</item>
+    </string-array>
+    <string-array name="alert_mean">
+        <item>야! “%1$s”. 지금 당장. 😤</item>
+        <item>“%1$s” 까먹었지? 그럴 줄 알았어. 🙄</item>
+        <item>일어나. “%1$s” 너 안 기다려줘. 😒</item>
+    </string-array>
+    <string-array name="alert_boss">
+        <item>대표님, “%1$s” 시간입니다. 📋</item>
+        <item>대표님, 예정된 “%1$s” 건 시작 시간입니다. 🗂️</item>
+        <item>실례합니다, 대표님. 다음 일정은 “%1$s” 건입니다. 📌</item>
+    </string-array>
 </resources>

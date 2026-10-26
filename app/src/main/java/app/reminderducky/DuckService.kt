@@ -528,7 +528,7 @@ class DuckService : Service() {
             }
         val more = alertQueue.size - 1
         view.findViewById<TextView>(R.id.bubbleIcon).text = r.icon
-        view.findViewById<TextView>(R.id.bubbleText).text = r.text
+        view.findViewById<TextView>(R.id.bubbleText).text = prefs.tone.alertLine(this, r.id, r.text)
         view.findViewById<TextView>(R.id.bubbleTime).text =
             DateFormat.getTimeFormat(this).format(r.timeMillis) + if (more > 0) "  ·  +$more more" else ""
         view.findViewById<View>(R.id.bubbleDone).setOnClickListener { ReminderActions.done(this, id) }

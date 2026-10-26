@@ -213,4 +213,24 @@
         <item>Report updated: one item fewer, Boss. 🗂️</item>
     </string-array>
     <string name="tone_sample_task">Water the plants</string>
+    <string-array name="alert_friendly">
+        <item>It\'s time! “%1$s” 💛</item>
+        <item>Hey friend, time for “%1$s”! 🐥</item>
+        <item>Quack! Don\'t forget “%1$s” ✨</item>
+    </string-array>
+    <string-array name="alert_zen">
+        <item>The moment has come: “%1$s”. 🪷</item>
+        <item>Breathe, and turn to “%1$s”. 🍃</item>
+        <item>Now is the time for “%1$s”. 🙏</item>
+    </string-array>
+    <string-array name="alert_mean">
+        <item>Hey! “%1$s”. NOW. 😤</item>
+        <item>You forgot “%1$s”, didn\'t you? Typical. 🙄</item>
+        <item>Get up. “%1$s” won\'t wait for you. 😒</item>
+    </string-array>
+    <string-array name="alert_boss">
+        <item>Boss, it\'s time for “%1$s”. 📋</item>
+        <item>Boss, your scheduled item “%1$s” is due now. 🗂️</item>
+        <item>Excuse me, Boss. “%1$s” is up next. 📌</item>
+    </string-array>
 </resources>
