@@ -575,8 +575,8 @@
                                 android:id="@+id/languageGroup"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                app:selectionRequired="true"
-                                app:singleSelection="true" />
+                                
+                                />
                         </LinearLayout>
 
                         <com.google.android.material.materialswitch.MaterialSwitch

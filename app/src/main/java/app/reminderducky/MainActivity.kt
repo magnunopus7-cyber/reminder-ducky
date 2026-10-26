@@ -304,7 +304,26 @@ class MainActivity : AppCompatActivity() {
     private val sizeCards = mutableMapOf<DuckSize, MaterialCardView>()
 
     /** A small card with a picture and a name, outlined when it is the current choice. */
-    private fun optionCard(row: ViewGroup, image: Int, label: Int, imageDp: Int = 64, onPick: () -> Unit): MaterialCardView {
+    private fun optionCard(row: ViewGroup, image: Int, label: Int, imageDp: Int = 64, onPick: () -> Unit): MaterialCardView =
+        optionCard(row, getString(label), imageDp, onPick) { setImageResource(image) }
+
+    /** Same card with a big letter (like 가 or Aa) in place of a picture. */
+    private fun glyphCard(row: ViewGroup, glyph: String, label: String, onPick: () -> Unit): MaterialCardView {
+        val card = optionCard(row, label, 64, onPick) {}
+        val box = ((card.getChildAt(0) as ViewGroup).getChildAt(0) as FrameLayout)
+        box.removeAllViews()
+        box.addView(TextView(this).apply {
+            text = glyph
+            textSize = 30f
+            setTypeface(typeface, android.graphics.Typeface.BOLD)
+            gravity = Gravity.CENTER
+            setTextColor(ContextCompat.getColor(context, R.color.ink))
+            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+        }, FrameLayout.LayoutParams(dp(64), dp(64), Gravity.CENTER))
+        return card
+    }
+
+    private fun optionCard(row: ViewGroup, label: String, imageDp: Int, onPick: () -> Unit, setImage: ImageView.() -> Unit): MaterialCardView {
         val card = MaterialCardView(this).apply {
             radius = dp(18).toFloat()
             strokeWidth = dp(2)
@@ -318,20 +337,23 @@ class MainActivity : AppCompatActivity() {
         }
         val box = FrameLayout(this)
         box.addView(ImageView(this).apply {
-            setImageResource(image)
+            setImage()
             scaleType = ImageView.ScaleType.FIT_CENTER
             importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
         }, FrameLayout.LayoutParams(dp(imageDp), dp(imageDp), Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM))
         col.addView(box, LinearLayout.LayoutParams(dp(72), dp(72)))
-        col.addView(TextView(this).apply {
-            setText(label)
+        val name = TextView(this).apply {
+            text = label
             setTextColor(ContextCompat.getColor(context, R.color.ink))
             textSize = 13f
             gravity = Gravity.CENTER
             // Never cut a name off: wrap onto as many lines as it needs, breaking Korean between words.
             if (Build.VERSION.SDK_INT >= 33) lineBreakWordStyle = android.graphics.text.LineBreakConfig.LINE_BREAK_WORD_STYLE_PHRASE
             setPadding(0, dp(4), 0, 0)
-        }, LinearLayout.LayoutParams(dp(84), LinearLayout.LayoutParams.WRAP_CONTENT))
+        }
+        // Wide enough for the longest word, so no word is ever split or cut, whatever the phone's text size.
+        val widest = label.split(' ').maxOf { name.paint.measureText(it) }.toInt() + dp(4)
+        col.addView(name, LinearLayout.LayoutParams(maxOf(dp(84), widest), LinearLayout.LayoutParams.WRAP_CONTENT))
         card.addView(col)
         row.addView(card, ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             .apply { marginEnd = dp(8); topMargin = dp(4); bottomMargin = dp(4); marginStart = dp(2) })
@@ -376,7 +398,7 @@ class MainActivity : AppCompatActivity() {
             val first = cards.firstOrNull() ?: return
             if (step == 0 && first.width > 0) {
                 val lp = first.layoutParams as ViewGroup.MarginLayoutParams
-                step = first.width + lp.marginStart + lp.marginEnd + dp(8)
+                step = cards.maxOf { it.width } + lp.marginStart + lp.marginEnd + dp(8)
                 cardHeight = first.height
             }
             if (row.width == 0 || step == 0) return
@@ -448,15 +470,14 @@ class MainActivity : AppCompatActivity() {
         val languages = listOf("en" to "English", "ko" to "한국어")
         val current = (AppCompatDelegate.getApplicationLocales()[0] ?: Locale.getDefault()).language
             .let { if (it == "ko") "ko" else "en" }
+        val glyphs = mapOf("en" to "Aa", "ko" to "가")
+        val accent = ContextCompat.getColor(this, R.color.duck_yellow)
         for ((tag, name) in languages) {
-            val chip = filterChip(name).also { languageGroup.addView(it) }
-            if (tag == current) {
-                languageGroup.check(chip.id)
-                findViewById<TextView>(R.id.languageValue).text = name
-            }
-            chip.setOnClickListener {
+            val card = glyphCard(languageGroup, glyphs.getValue(tag), name) {
                 AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(tag))
             }
+            card.strokeColor = if (tag == current) accent else Color.TRANSPARENT
+            if (tag == current) findViewById<TextView>(R.id.languageValue).text = name
         }
         syncCustomizer()
     }
