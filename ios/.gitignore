@@ -1,0 +1,7 @@
+Ducky.xcodeproj/
+App/Info.plist
+App/Ducky.entitlements
+Widget/Info.plist
+Widget/DuckyWidget.entitlements
+build/
+build-*.log
