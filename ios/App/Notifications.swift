@@ -47,6 +47,7 @@ enum Notifications {
             }
         }
         SharedStore.reloadWidgets()
+        LiveDuck.refresh()
     }
 
     private static func content(for r: Reminder) -> UNMutableNotificationContent {

@@ -5,6 +5,7 @@ struct ContentView: View {
     @StateObject private var duck = DuckController()
     @AppStorage("lang", store: SharedStore.defaults) private var lang = ""
     @AppStorage("tapQuack", store: SharedStore.defaults) private var tapQuack = true
+    @AppStorage("liveDuck", store: SharedStore.defaults) private var liveDuck = true
     @State private var reminders: [Reminder] = SharedStore.reminders
     @State private var todos: [Todo] = SharedStore.todos
     @State private var look = SharedStore.look
@@ -316,10 +317,17 @@ struct ContentView: View {
         FoldCard(title: L("widget_title"), key: "widget") {
             EmptyView()
         } content: {
-            Text(L("widget_help"))
-                .font(.subheadline)
-                .foregroundStyle(DuckTheme.ink)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            VStack(alignment: .leading, spacing: 10) {
+                Toggle(L("live_duck"), isOn: $liveDuck)
+                    .font(.subheadline.weight(.semibold))
+                    .tint(DuckTheme.skyTop)
+                    .onChange(of: liveDuck) { _, _ in LiveDuck.refresh() }
+                Text(L("live_duck_help")).font(.caption).foregroundStyle(DuckTheme.inkSoft)
+                Text(L("widget_help"))
+                    .font(.subheadline)
+                    .foregroundStyle(DuckTheme.ink)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
         }
     }
 }

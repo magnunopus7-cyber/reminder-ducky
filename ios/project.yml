@@ -37,6 +37,7 @@ targets:
           UIColorName: ""
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         ITSAppUsesNonExemptEncryption: false
+        NSSupportsLiveActivities: true
     entitlements:
       path: App/Ducky.entitlements
       properties:

@@ -79,6 +79,7 @@ final class DuckController: NSObject, ObservableObject, WKNavigationDelegate {
                 if remaining == 0 {
                     if allSaved { SharedStore.defaults.set(key, forKey: "pictureKey") }
                     SharedStore.reloadWidgets()
+                    LiveDuck.refresh()
                 }
             }
         }

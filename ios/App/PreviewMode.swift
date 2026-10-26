@@ -29,6 +29,16 @@ enum PreviewMode {
             (.accessoryRectangular, CGSize(width: 172, height: 76), "lock_rect"),
             (.accessoryCircular, CGSize(width: 76, height: 76), "lock_circle"),
         ]
+        let banner = LockScreenDuck(state: .now())
+            .frame(width: 364, height: 120)
+            .background(Color(red: 0.43, green: 0.69, blue: 1).opacity(0.55))
+            .background(Color.black)
+            .clipShape(RoundedRectangle(cornerRadius: 22))
+        let bannerRenderer = ImageRenderer(content: banner)
+        bannerRenderer.scale = 3
+        if let data = bannerRenderer.uiImage?.pngData() {
+            try? data.write(to: docs.appendingPathComponent("widget_live.png"))
+        }
         for (family, size, name) in sizes {
             let view = DuckWidgetView(entry: entry, family: family)
                 .padding(name.hasPrefix("lock") ? 4 : 16)

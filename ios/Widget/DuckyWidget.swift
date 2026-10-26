@@ -70,5 +70,6 @@ struct DuckyWidgetEntryView: View {
 struct DuckyWidgets: WidgetBundle {
     var body: some Widget {
         DuckyWidget()
+        DuckLiveActivity()
     }
 }
