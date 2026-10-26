@@ -18,7 +18,8 @@ enum class Tone(
     FRIENDLY(R.string.tone_friendly, R.array.talk_one, R.array.talk_many, R.array.talk_none, R.array.talk_praise, R.array.alert_friendly),
     ZEN(R.string.tone_zen, R.array.talk_one_zen, R.array.talk_many_zen, R.array.talk_none_zen, R.array.talk_praise_zen, R.array.alert_zen),
     MEAN(R.string.tone_mean, R.array.talk_one_mean, R.array.talk_many_mean, R.array.talk_none_mean, R.array.talk_praise_mean, R.array.alert_mean),
-    BOSS(R.string.tone_boss, R.array.talk_one_boss, R.array.talk_many_boss, R.array.talk_none_boss, R.array.talk_praise_boss, R.array.alert_boss);
+    BOSS(R.string.tone_boss, R.array.talk_one_boss, R.array.talk_many_boss, R.array.talk_none_boss, R.array.talk_praise_boss, R.array.alert_boss),
+    LOVE(R.string.tone_love, R.array.talk_one_love, R.array.talk_many_love, R.array.talk_none_love, R.array.talk_praise_love, R.array.alert_love);
 
     /** The reminder line for [text]; the same reminder always gets the same line. */
     fun alertLine(context: android.content.Context, id: Long, text: String): String {

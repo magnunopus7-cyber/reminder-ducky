@@ -233,4 +233,29 @@
         <item>대표님, 예정된 “%1$s” 건 시작 시간입니다. 🗂️</item>
         <item>실례합니다, 대표님. 다음 일정은 “%1$s” 건입니다. 📌</item>
     </string-array>
+    <string name="tone_love">애인</string>
+    <string-array name="talk_one_love">
+        <item>자기야, 하나만 남았어. “%1$s” 할 수 있지? 💕</item>
+        <item>자기, “%1$s” 잊으면 안 돼, 알았지? 내가 응원할게. 😘</item>
+        <item>“%1$s” 기다리고 있어. 나 위해서 해줄 거지? 💗</item>
+    </string-array>
+    <string-array name="talk_many_love">
+        <item>자기야, 오늘 %1$d개 남았어. “%2$s”부터 하자, 내가 옆에 있을게. 💕</item>
+        <item>자기, 할 일 %1$d개! “%2$s” 먼저 해볼까? 😘</item>
+        <item>%1$d개만 하면 돼. “%2$s” 하고 나랑 쉬자. 💗</item>
+    </string-array>
+    <string-array name="talk_none_love">
+        <item>다 끝냈어, 자기야! 너무 자랑스러워. 💕</item>
+        <item>오늘 할 일 끝! 이제 나랑 쉬자. 😘</item>
+    </string-array>
+    <string-array name="talk_praise_love">
+        <item>역시 우리 자기 최고! 💕</item>
+        <item>해냈네, 자기야. 할 줄 알았어. 😘</item>
+        <item>너무 멋있어, 자기! 💗</item>
+    </string-array>
+    <string-array name="alert_love">
+        <item>자기야, “%1$s” 할 시간이야. 💕</item>
+        <item>보고 싶었어. 그리고 “%1$s” 시간이야! 😘</item>
+        <item>자기, “%1$s” 잊지 마. 💗</item>
+    </string-array>
 </resources>

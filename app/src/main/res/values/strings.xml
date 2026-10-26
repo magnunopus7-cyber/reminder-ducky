@@ -233,4 +233,29 @@
         <item>Boss, your scheduled item “%1$s” is due now. 🗂️</item>
         <item>Excuse me, Boss. “%1$s” is up next. 📌</item>
     </string-array>
+    <string name="tone_love">Sweetheart</string>
+    <string-array name="talk_one_love">
+        <item>Babe, just one thing left: “%1$s”. You\'ve got this. 💕</item>
+        <item>Honey, don\'t forget “%1$s”, okay? I\'ll be cheering for you. 😘</item>
+        <item>“%1$s” is waiting, love. Do it for me? 💗</item>
+    </string-array>
+    <string-array name="talk_many_love">
+        <item>Babe, %1$d things today. Start with “%2$s” and I\'ll be right here. 💕</item>
+        <item>Honey, %1$d little things left. How about “%2$s” first? 😘</item>
+        <item>%1$d to go, love. “%2$s” first, then cuddles? 💗</item>
+    </string-array>
+    <string-array name="talk_none_love">
+        <item>All done, babe! I\'m so proud of you. 💕</item>
+        <item>Nothing left today, honey. Come rest with me. 😘</item>
+    </string-array>
+    <string-array name="talk_praise_love">
+        <item>That\'s my favourite human! 💕</item>
+        <item>You did it, babe. I knew you would. 😘</item>
+        <item>So proud of you, honey! 💗</item>
+    </string-array>
+    <string-array name="alert_love">
+        <item>Babe, it\'s time for “%1$s”. 💕</item>
+        <item>Honey, I missed you. Also, “%1$s”! 😘</item>
+        <item>Hey love, don\'t forget “%1$s”. 💗</item>
+    </string-array>
 </resources>
