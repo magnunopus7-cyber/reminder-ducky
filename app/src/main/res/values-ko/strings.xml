@@ -77,7 +77,7 @@
     <string name="acc_none">없음</string>
     <string name="acc_flower">꽃</string>
     <string name="acc_beanie">비니</string>
-    <string name="acc_party">파티 모자</string>
+    <string name="acc_party">핑크 꼬깔</string>
     <string name="size_small">작게</string>
     <string name="size_medium">보통</string>
     <string name="size_large">크게</string>
@@ -128,7 +128,7 @@
     <string name="acc_headphones">헤드폰</string>
     <string name="acc_cape">망토</string>
     <string name="acc_cap">모자</string>
-    <string name="acc_party_blue">파란 고깔모자</string>
+    <string name="acc_party_blue">파란 꼬깔</string>
     <string name="fewer_options">접기</string>
     <string name="more_options">더 보기</string>
     <!-- 덕희가 친구처럼 말해요. -->

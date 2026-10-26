@@ -1,4 +1,5 @@
 <resources>
+    <color name="plus_blue">#5AAAF3</color>
     <color name="icon_bg">#8EC5FF</color>
     <color name="sky_top">#6FB1FF</color>
     <color name="sky_bottom">#BFDFFF</color>
