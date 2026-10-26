@@ -160,7 +160,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setUpTodos() {
         todos = TodoStore(this)
-        val input = findViewById<TextInputEditText>(R.id.todoInput)
+        val input = findViewById<android.widget.EditText>(R.id.todoInput)
         fun add() {
             val text = input.text?.toString()?.trim().orEmpty()
             if (text.isEmpty()) return
@@ -337,8 +337,37 @@ class MainActivity : AppCompatActivity() {
         return card
     }
 
+    /** Puts a round + at the right end of a sideways row while more options are hidden there. */
+    private fun addMoreHint(row: View) {
+        val scroll = row.parent as android.widget.HorizontalScrollView
+        val holder = scroll.parent as ViewGroup
+        val index = holder.indexOfChild(scroll)
+        holder.removeView(scroll)
+        val frame = FrameLayout(this)
+        frame.addView(scroll)
+        val plus = TextView(this).apply {
+            text = "+"
+            textSize = 20f
+            gravity = Gravity.CENTER
+            setTextColor(Color.WHITE)
+            setBackgroundResource(R.drawable.more_hint)
+            elevation = dp(3).toFloat()
+            contentDescription = getString(R.string.more_options)
+            setOnClickListener { scroll.smoothScrollBy(dp(200), 0) }
+        }
+        frame.addView(plus, FrameLayout.LayoutParams(dp(32), dp(32), Gravity.END or Gravity.CENTER_VERTICAL))
+        holder.addView(frame, index, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
+        fun update() {
+            plus.visibility = if (scroll.canScrollHorizontally(1)) View.VISIBLE else View.GONE
+        }
+        scroll.setOnScrollChangeListener { _, _, _, _, _ -> update() }
+        scroll.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> update() }
+    }
+
     private fun buildCustomizer() {
         setUpFolds()
+        addMoreHint(findViewById(R.id.materialRow))
+        addMoreHint(findViewById(R.id.sizeRow))
         val materialRow = findViewById<LinearLayout>(R.id.materialRow)
         for (m in DuckMaterial.entries) {
             materialCards[m] = optionCard(materialRow, m.thumb, m.label) { applyLook(prefs.look.copy(material = m)) }

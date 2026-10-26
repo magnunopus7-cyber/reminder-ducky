@@ -252,31 +252,29 @@
                             android:gravity="center_vertical"
                             android:orientation="horizontal">
 
-                            <com.google.android.material.textfield.TextInputLayout
-                                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
+                            <EditText
+                                android:id="@+id/todoInput"
                                 android:layout_width="0dp"
-                                android:layout_height="wrap_content"
+                                android:layout_height="48dp"
                                 android:layout_weight="1"
+                                android:background="@drawable/pill_input"
                                 android:hint="@string/todo_hint"
-                                app:boxCornerRadiusBottomEnd="28dp"
-                                app:boxCornerRadiusBottomStart="28dp"
-                                app:boxCornerRadiusTopEnd="28dp"
-                                app:boxCornerRadiusTopStart="28dp">
-
-                                <com.google.android.material.textfield.TextInputEditText
-                                    android:id="@+id/todoInput"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:imeOptions="actionDone"
-                                    android:inputType="textCapSentences"
-                                    android:paddingStart="20dp"
-                                    android:paddingEnd="20dp" />
-                            </com.google.android.material.textfield.TextInputLayout>
+                                android:imeOptions="actionDone"
+                                android:importantForAutofill="no"
+                                android:inputType="textCapSentences"
+                                android:paddingStart="20dp"
+                                android:paddingEnd="20dp"
+                                android:textColor="@color/ink"
+                                android:textColorHint="@color/ink_soft"
+                                android:textSize="16sp" />
 
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/todoAdd"
                                 android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_height="48dp"
+                                android:insetTop="0dp"
+                                android:insetBottom="0dp"
+                                app:cornerRadius="24dp"
                                 android:layout_marginStart="8dp"
                                 android:text="@string/add" />
                         </LinearLayout>
