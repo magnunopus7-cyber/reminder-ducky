@@ -415,6 +415,9 @@ class MainActivity : AppCompatActivity() {
         row.addView(holder, ViewGroup.MarginLayoutParams(dp(44), dp(44)).apply { topMargin = dp(4); marginStart = dp(2) })
         val few = 3
         val nameWidths = cards.map { ((it.getChildAt(0) as ViewGroup).getChildAt(1)).layoutParams.width }
+        // Folded cards are narrow, so every name gets room for two lines from the start:
+        // the cards are all the same height and a name that wraps is never clipped.
+        for (card in cards) ((card.getChildAt(0) as ViewGroup).getChildAt(1) as TextView).minLines = 2
         fun apply() {
             if (row.width == 0) return
             val folded = !open && cards.size > few
@@ -442,6 +445,7 @@ class MainActivity : AppCompatActivity() {
                 card.requestLayout()
             }
             row.post {
+                row.requestLayout()
                 val h = cards.firstOrNull { it.visibility == View.VISIBLE }?.height ?: 0
                 if (h > 0 && holder.layoutParams.height != h) { holder.layoutParams.height = h; holder.requestLayout() }
             }
