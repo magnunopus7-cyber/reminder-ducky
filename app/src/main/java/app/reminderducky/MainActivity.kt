@@ -499,12 +499,22 @@ class MainActivity : AppCompatActivity() {
         val languages = listOf("en" to "English", "ko" to "한국어")
         val current = (AppCompatDelegate.getApplicationLocales()[0] ?: Locale.getDefault()).language
             .let { if (it == "ko") "ko" else "en" }
-        val glyphs = mapOf("en" to "Aa", "ko" to "가")
         val accent = ContextCompat.getColor(this, R.color.duck_yellow)
         for ((tag, name) in languages) {
-            val card = glyphCard(languageGroup, glyphs.getValue(tag), name) {
-                AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(tag))
+            val card = MaterialCardView(this).apply {
+                radius = dp(18).toFloat()
+                strokeWidth = dp(2)
+                cardElevation = dp(1).toFloat()
+                setOnClickListener { AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(tag)) }
+                addView(TextView(context).apply {
+                    text = name
+                    textSize = 15f
+                    setTextColor(ContextCompat.getColor(context, R.color.ink))
+                    setPadding(dp(22), dp(12), dp(22), dp(12))
+                })
             }
+            languageGroup.addView(card, ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                .apply { marginEnd = dp(8); topMargin = dp(4); bottomMargin = dp(4); marginStart = dp(2) })
             card.strokeColor = if (tag == current) accent else Color.TRANSPARENT
             if (tag == current) findViewById<TextView>(R.id.languageValue).text = name
         }
