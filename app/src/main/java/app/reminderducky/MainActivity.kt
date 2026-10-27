@@ -356,13 +356,25 @@ class MainActivity : AppCompatActivity() {
             setTextColor(ContextCompat.getColor(context, R.color.ink))
             textSize = 13f
             gravity = Gravity.CENTER
-            // Never cut a name off: wrap onto as many lines as it needs, breaking Korean between words.
-            if (Build.VERSION.SDK_INT >= 33) lineBreakWordStyle = android.graphics.text.LineBreakConfig.LINE_BREAK_WORD_STYLE_PHRASE
             setPadding(0, dp(4), 0, 0)
         }
         // Wide enough for the longest word, so no word is ever split or cut, whatever the phone's text size.
         val widest = label.split(' ').maxOf { name.paint.measureText(it) }.toInt() + dp(4)
         col.addView(name, LinearLayout.LayoutParams(maxOf(dp(84), widest), LinearLayout.LayoutParams.WRAP_CONTENT))
+        // Never cut a name off: whenever the card's width changes, break it between words onto as many lines as needed.
+        name.addOnLayoutChangeListener { _, l, _, r, _, ol, _, or_, _ ->
+            if (r - l != or_ - ol) {
+                val room = (r - l - name.paddingLeft - name.paddingRight).toFloat()
+                val lines = mutableListOf<String>()
+                for (word in label.split(' ')) {
+                    val last = lines.lastOrNull()
+                    if (last != null && name.paint.measureText("$last $word") <= room) lines[lines.size - 1] = "$last $word"
+                    else lines += word
+                }
+                val wrapped = lines.joinToString("\n")
+                if (wrapped != name.text.toString()) name.post { name.text = wrapped }
+            }
+        }
         card.addView(col)
         row.addView(card, ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             .apply { marginEnd = dp(8); topMargin = dp(4); bottomMargin = dp(4); marginStart = dp(2) })
