@@ -480,6 +480,7 @@ class MainActivity : AppCompatActivity() {
                 syncCustomizer()
             }
         }
+        showFew(toneGroup, Tone.entries.map { toneCards.getValue(it) }) { toneCards[prefs.tone] }
 
         // Language: English or Korean just for Ducky. Until one is picked, the phone's language is used.
         val languageGroup = findViewById<ChipGroup>(R.id.languageGroup)
