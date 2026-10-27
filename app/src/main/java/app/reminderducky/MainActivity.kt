@@ -310,6 +310,7 @@ class MainActivity : AppCompatActivity() {
     private val colorCards = mutableMapOf<DuckColor, MaterialCardView>()
     private val accessoryCards = mutableMapOf<DuckAccessory, MaterialCardView>()
     private val sizeCards = mutableMapOf<DuckSize, MaterialCardView>()
+    private val toneCards = mutableMapOf<Tone, MaterialCardView>()
 
     /** A small card with a picture and a name, outlined when it is the current choice. */
     private fun optionCard(row: ViewGroup, image: Int, label: Int, imageDp: Int = 64, onPick: () -> Unit): MaterialCardView =
@@ -472,9 +473,7 @@ class MainActivity : AppCompatActivity() {
         // Tone: how Ducky talks about your to-dos in its bubble.
         val toneGroup = findViewById<ChipGroup>(R.id.toneGroup)
         for (t in Tone.entries) {
-            val chip = filterChip(getString(t.label)).also { toneGroup.addView(it) }
-            if (t == prefs.tone) toneGroup.check(chip.id)
-            chip.setOnClickListener {
+            toneCards[t] = glyphCard(toneGroup, t.glyph, getString(t.label)) {
                 prefs.tone = t
                 if (prefs.tapQuack) Quack.play(this, 0.5f)
                 preview.renderer.react(Mood.HAPPY, 1.2f)
@@ -499,12 +498,6 @@ class MainActivity : AppCompatActivity() {
         syncCustomizer()
     }
 
-    private fun filterChip(label: String) =
-        (LayoutInflater.from(this).inflate(R.layout.chip_filter, null) as Chip).apply {
-            id = View.generateViewId()
-            text = label
-        }
-
     /** Outlines the current choices and shows them next to each folded title. */
     private fun syncCustomizer() {
         val look = prefs.look
@@ -516,6 +509,7 @@ class MainActivity : AppCompatActivity() {
         mark(colorCards, look.color)
         mark(accessoryCards, look.accessory)
         mark(sizeCards, prefs.size)
+        mark(toneCards, prefs.tone)
         findViewById<TextView>(R.id.materialValue).setText(look.material.label)
         findViewById<TextView>(R.id.accessoryValue).setText(look.accessory.label)
         findViewById<TextView>(R.id.sizeValue).setText(prefs.size.label)
