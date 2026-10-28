@@ -259,4 +259,10 @@
         <item>보고 싶었어. 그리고 “%1$s” 시간이야! 😘</item>
         <item>자기, “%1$s” 잊지 마. 💗</item>
     </string-array>
+    <string name="calendar_switch">구글 캘린더에 표시</string>
+    <string name="calendar_in">%1$s에 추가 중</string>
+    <string name="calendar_pick">어느 캘린더에 넣을까요?</string>
+    <string name="calendar_none">캘린더가 없어요. 휴대폰 설정에서 구글 계정을 먼저 추가해 주세요.</string>
+    <string name="calendar_todo_title">🐥 할 일:</string>
+    <string name="calendar_note">덕희가 추가했어요</string>
 </resources>

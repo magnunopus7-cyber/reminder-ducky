@@ -259,4 +259,10 @@
         <item>Honey, I missed you. Also, “%1$s”! 😘</item>
         <item>Hey love, don\'t forget “%1$s”. 💗</item>
     </string-array>
+    <string name="calendar_switch">Show in Google Calendar</string>
+    <string name="calendar_in">Adding to: %1$s</string>
+    <string name="calendar_pick">Which calendar should Ducky use?</string>
+    <string name="calendar_none">No calendar found. Add your Google account in the phone\'s settings first.</string>
+    <string name="calendar_todo_title">🐥 To-do:</string>
+    <string name="calendar_note">Added by Ducky</string>
 </resources>

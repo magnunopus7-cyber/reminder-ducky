@@ -45,6 +45,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var store: ReminderStore
     private lateinit var preview: DuckGLView
 
+    private val calendarPermission =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+            if (CalendarSync.hasPermission(this)) pickCalendar() else setCalendarSwitch(false)
+        }
+
     private val notifPermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { refresh() }
 
@@ -101,6 +106,22 @@ class MainActivity : AppCompatActivity() {
             setOnCheckedChangeListener { _, checked ->
                 prefs.tapQuack = checked
                 if (checked) Quack.play(this@MainActivity, 0.6f)
+            }
+        }
+        findViewById<MaterialSwitch>(R.id.switchCalendar).apply {
+            isChecked = prefs.calendarSync && CalendarSync.hasPermission(this@MainActivity)
+            showCalendarName()
+            setOnCheckedChangeListener { v, checked ->
+                if (!v.isPressed) return@setOnCheckedChangeListener
+                if (!checked) {
+                    prefs.calendarSync = false
+                    CalendarSync.clear(this@MainActivity)
+                    showCalendarName()
+                } else if (CalendarSync.hasPermission(this@MainActivity)) {
+                    pickCalendar()
+                } else {
+                    calendarPermission.launch(arrayOf(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR))
+                }
             }
         }
         findViewById<MaterialSwitch>(R.id.switchDuck).setOnCheckedChangeListener { v, checked ->
@@ -215,10 +236,49 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // ---- Google Calendar ----
+
+    /** Asks which calendar to use when there is more than one, then turns copying on. */
+    private fun pickCalendar() {
+        val cals = CalendarSync.calendars(this)
+        fun use(c: CalendarSync.Cal) {
+            prefs.calendarId = c.id
+            prefs.calendarName = if (c.name == c.account || c.account.isEmpty()) c.name else "${c.name} (${c.account})"
+            prefs.calendarSync = true
+            setCalendarSwitch(true)
+            CalendarSync.sync(this)
+        }
+        when {
+            cals.isEmpty() -> {
+                Toast.makeText(this, R.string.calendar_none, Toast.LENGTH_LONG).show()
+                setCalendarSwitch(false)
+            }
+            cals.size == 1 -> use(cals[0])
+            else -> MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.calendar_pick)
+                .setItems(cals.map { if (it.name == it.account) it.name else "${it.name}\n${it.account}" }.toTypedArray()) { _, i -> use(cals[i]) }
+                .setOnCancelListener { setCalendarSwitch(false) }
+                .show()
+        }
+    }
+
+    private fun setCalendarSwitch(on: Boolean) {
+        findViewById<MaterialSwitch>(R.id.switchCalendar).isChecked = on
+        showCalendarName()
+    }
+
+    private fun showCalendarName() {
+        val label = findViewById<TextView>(R.id.calendarName)
+        val on = prefs.calendarSync && prefs.calendarName.isNotEmpty()
+        label.visibility = if (on) View.VISIBLE else View.GONE
+        label.text = getString(R.string.calendar_in, prefs.calendarName)
+    }
+
     override fun onResume() {
         super.onResume()
         preview.onResume()
         refresh()
+        CalendarSync.sync(this)
         if (prefs.showDuck && DuckService.canShow(this) && DuckService.instance == null) DuckService.start(this)
         // The floating duck would cover this screen's buttons; it comes back when you leave.
         DuckService.setAppOpen(true)

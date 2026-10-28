@@ -8,7 +8,8 @@ import org.json.JSONObject
 data class Todo(val id: Long, val text: String, val done: Boolean = false)
 
 class TodoStore(context: Context) {
-    private val sp = context.applicationContext.getSharedPreferences("todos", Context.MODE_PRIVATE)
+    private val app = context.applicationContext
+    private val sp = app.getSharedPreferences("todos", Context.MODE_PRIVATE)
 
     fun all(): List<Todo> = synchronized(LOCK) {
         val arr = JSONArray(sp.getString("list", "[]"))
@@ -32,6 +33,7 @@ class TodoStore(context: Context) {
         val arr = JSONArray()
         list.forEach { arr.put(JSONObject().put("id", it.id).put("text", it.text).put("done", it.done)) }
         sp.edit().putString("list", arr.toString()).apply()
+        CalendarSync.sync(app)
     }
 
     companion object {

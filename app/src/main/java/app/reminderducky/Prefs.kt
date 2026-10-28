@@ -31,6 +31,17 @@ class Prefs(context: Context) {
     fun isOpen(section: String, default: Boolean) = sp.getBoolean("open_$section", default)
     fun setOpen(section: String, open: Boolean) = sp.edit().putBoolean("open_$section", open).apply()
 
+    /** Copy reminders and to-dos into a phone calendar (see CalendarSync), and which one. */
+    var calendarSync: Boolean
+        get() = sp.getBoolean("calendar_sync", false)
+        set(v) = sp.edit().putBoolean("calendar_sync", v).apply()
+    var calendarId: Long
+        get() = sp.getLong("calendar_id", -1)
+        set(v) = sp.edit().putLong("calendar_id", v).apply()
+    var calendarName: String
+        get() = sp.getString("calendar_name", "") ?: ""
+        set(v) = sp.edit().putString("calendar_name", v).apply()
+
     var tone: Tone
         get() = enumOr(sp.getString("tone", null), Tone.FRIENDLY)
         set(v) = sp.edit().putString("tone", v.name).apply()

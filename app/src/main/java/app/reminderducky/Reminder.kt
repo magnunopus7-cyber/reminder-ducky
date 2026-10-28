@@ -57,7 +57,8 @@ data class Reminder(
 
 /** Keeps reminders on the phone as a small JSON list. */
 class ReminderStore(context: Context) {
-    private val sp = context.applicationContext.getSharedPreferences("reminders", Context.MODE_PRIVATE)
+    private val app = context.applicationContext
+    private val sp = app.getSharedPreferences("reminders", Context.MODE_PRIVATE)
 
     fun all(): List<Reminder> = synchronized(LOCK) {
         val arr = JSONArray(sp.getString("list", "[]"))
@@ -78,6 +79,7 @@ class ReminderStore(context: Context) {
         val arr = JSONArray()
         list.forEach { arr.put(it.toJson()) }
         sp.edit().putString("list", arr.toString()).apply()
+        CalendarSync.sync(app)
     }
 
     companion object {

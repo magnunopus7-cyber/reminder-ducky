@@ -205,6 +205,19 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:text="@string/try_it" />
+
+                        <com.google.android.material.materialswitch.MaterialSwitch
+                            android:id="@+id/switchCalendar"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/calendar_switch"
+                            android:textColor="@color/ink" />
+
+                        <TextView
+                            android:id="@+id/calendarName"
+                            style="@style/SectionSub"
+                            android:visibility="gone" />
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

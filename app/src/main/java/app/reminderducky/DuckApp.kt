@@ -9,6 +9,8 @@ import android.net.Uri
 class DuckApp : Application() {
     override fun onCreate() {
         super.onCreate()
+        // To-dos sit on today's date in the calendar, so move them along when the app starts.
+        CalendarSync.sync(this)
         val nm = getSystemService(NotificationManager::class.java)
         nm.createNotificationChannel(
             NotificationChannel(CHANNEL_REMINDERS, getString(R.string.channel_reminders), NotificationManager.IMPORTANCE_HIGH).apply {
