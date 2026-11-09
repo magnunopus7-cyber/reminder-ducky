@@ -51,7 +51,7 @@
     <string name="fg_title">Ducky is keeping you company</string>
     <string name="fg_text">Tap to open your reminders</string>
     <string name="duck_desc">Ducky. Tap for quick actions.</string>
-    <string name="napping">Ducky is napping. Reminders still arrive as notifications. Open the Ducky app to bring it back.</string>
+    <string name="napping">Ducky is napping. Reminders still arrive as notifications. To bring Ducky back, open the app and turn on “Show Ducky over other apps”.</string>
     <string name="snoozed">Snoozed for %1$d minutes</string>
     <string name="notif_title">%1$s Ducky reminder</string>
     <string name="notif_snooze">Snooze %1$d min</string>
@@ -83,6 +83,7 @@
     <string name="size_large">Large</string>
     <string name="size_huge">Extra large</string>
     <string name="size_gigantic">Gigantic</string>
+    <string name="menu_close">Close Ducky</string>
     <string name="menu_settings">Settings</string>
     <string name="skin_classic">Classic</string>
     <string name="skin_pastel">Pastel</string>

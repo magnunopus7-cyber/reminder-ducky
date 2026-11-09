@@ -51,7 +51,7 @@
     <string name="fg_title">덕희가 곁에 있어요</string>
     <string name="fg_text">눌러서 알림 열기</string>
     <string name="duck_desc">덕희예요. 누르면 빠른 메뉴가 열려요.</string>
-    <string name="napping">덕희가 낮잠 자러 갔어요. 알림은 계속 와요. 덕희 앱을 열면 다시 나타나요.</string>
+    <string name="napping">덕희가 낮잠 자러 갔어요. 알림은 계속 와요. 다시 부르려면 앱에서 “다른 앱 위에 덕희 보이기”를 켜 주세요.</string>
     <string name="snoozed">%1$d분 뒤에 다시 알려 줄게요</string>
     <string name="notif_title">%1$s 덕희 알림</string>
     <string name="notif_snooze">%1$d분 뒤에</string>
@@ -83,6 +83,7 @@
     <string name="size_large">크게</string>
     <string name="size_huge">아주 크게</string>
     <string name="size_gigantic">아주 아주 크게</string>
+    <string name="menu_close">덕희 닫기</string>
     <string name="menu_settings">설정</string>
     <string name="skin_classic">클래식</string>
     <string name="skin_pastel">파스텔</string>

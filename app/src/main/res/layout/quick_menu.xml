@@ -32,6 +32,7 @@
             <TextView android:id="@+id/menuAdd" style="@style/MenuIcon" android:contentDescription="@string/menu_alarm" android:text="⏰" />
             <TextView android:id="@+id/menuTodo" style="@style/MenuIcon" android:contentDescription="@string/menu_todo" android:text="📝" />
             <TextView android:id="@+id/menuSettings" style="@style/MenuIcon" android:contentDescription="@string/menu_settings" android:text="⚙️" />
+            <TextView android:id="@+id/menuClose" style="@style/MenuIcon" android:contentDescription="@string/menu_close" android:text="✖️" />
         </LinearLayout>
     </LinearLayout>
 </FrameLayout>

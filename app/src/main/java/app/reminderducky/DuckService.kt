@@ -340,12 +340,16 @@ class DuckService : Service() {
         v.findViewById<View>(R.id.menuAdd).setOnClickListener { openApp(MainActivity.ACTION_ADD) }
         v.findViewById<View>(R.id.menuTodo).setOnClickListener { openApp(MainActivity.ACTION_TODO) }
         v.findViewById<View>(R.id.menuSettings).setOnClickListener { openApp(MainActivity.ACTION_CUSTOMIZE) }
+        v.findViewById<View>(R.id.menuClose).setOnClickListener {
+            hideMenu()
+            hideDuckByUser()
+        }
         v.setOnTouchListener { _, e ->
             if (e.actionMasked == MotionEvent.ACTION_OUTSIDE) hideMenu()
             false
         }
         // Long-press any icon to see what it does.
-        listOf(R.id.menuDone, R.id.menuSnooze, R.id.menuAdd, R.id.menuTodo, R.id.menuSettings)
+        listOf(R.id.menuDone, R.id.menuSnooze, R.id.menuAdd, R.id.menuTodo, R.id.menuSettings, R.id.menuClose)
             .forEach { id -> v.findViewById<View>(id).let { it.tooltipText = it.contentDescription } }
         v.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
         v.background = SpeechBubbleDrawable(
